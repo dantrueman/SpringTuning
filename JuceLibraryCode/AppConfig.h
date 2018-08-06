@@ -93,10 +93,6 @@
  //#define JUCE_JACK 0
 #endif
 
-#ifndef    JUCE_BELA
- //#define JUCE_BELA 0
-#endif
-
 #ifndef    JUCE_USE_ANDROID_OBOE
  //#define JUCE_USE_ANDROID_OBOE 0
 #endif
@@ -168,10 +164,6 @@
 
 #ifndef    JUCE_PLUGINHOST_AU
  //#define JUCE_PLUGINHOST_AU 0
-#endif
-
-#ifndef    JUCE_PLUGINHOST_LADSPA
- //#define JUCE_PLUGINHOST_LADSPA 0
 #endif
 
 //==============================================================================
@@ -313,7 +305,7 @@
  #define JucePlugin_Build_AAX              0
 #endif
 #ifndef  JucePlugin_Build_Standalone
- #define JucePlugin_Build_Standalone       1
+ #define JucePlugin_Build_Standalone       0
 #endif
 #ifndef  JucePlugin_Enable_IAA
  #define JucePlugin_Enable_IAA             0
@@ -369,11 +361,8 @@
 #ifndef  JucePlugin_VSTCategory
  #define JucePlugin_VSTCategory            kPlugCategEffect
 #endif
-#ifndef  JucePlugin_Vst3Category
- #define JucePlugin_Vst3Category           "Fx"
-#endif
 #ifndef  JucePlugin_AUMainType
- #define JucePlugin_AUMainType             'aufx'
+ #define JucePlugin_AUMainType             kAudioUnitType_Effect
 #endif
 #ifndef  JucePlugin_AUSubType
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
@@ -391,7 +380,7 @@
  #define JucePlugin_CFBundleIdentifier     com.yourcompany.SpringTuning
 #endif
 #ifndef  JucePlugin_RTASCategory
- #define JucePlugin_RTASCategory           0
+ #define JucePlugin_RTASCategory           ePlugInCategory_None
 #endif
 #ifndef  JucePlugin_RTASManufacturerCode
  #define JucePlugin_RTASManufacturerCode   JucePlugin_ManufacturerCode
@@ -415,7 +404,7 @@
  #define JucePlugin_AAXProductId           JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_AAXCategory
- #define JucePlugin_AAXCategory            0
+ #define JucePlugin_AAXCategory            AAX_ePlugInCategory_Dynamics
 #endif
 #ifndef  JucePlugin_AAXDisableBypass
  #define JucePlugin_AAXDisableBypass       0

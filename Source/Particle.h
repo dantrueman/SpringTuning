@@ -17,14 +17,22 @@ public:
 	double getX();
 	double getY();
 	double getWeight();
-	bool locked();
+	bool getLocked();
 	void lock();
+	void changeLock();
 	Particle copy();
-	bool compare();
+	bool compare(Particle that);
 	void print();
+	void addX(double that);
+	void addY(double that);
+	void subX(double that);
+	void subY(double that);
+	void integrate();
 private:
 	double x;
 	double y;
+	double prevX;
+	double prevY;
 	double w;
 	bool locked;
 };
