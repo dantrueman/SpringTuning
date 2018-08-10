@@ -12,6 +12,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "Physics.h"
+
 //==============================================================================
 /**
 */
@@ -56,7 +58,13 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    stk::SineWave osc;
+    void block(void);
+    float tick(float sample);
+    stk::BlitSaw osc[12];
+    
+    Physics physics;
+    
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpringTuningAudioProcessor)
 };

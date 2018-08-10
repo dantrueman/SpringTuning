@@ -32,139 +32,66 @@ SpringTuningAudioProcessor::~SpringTuningAudioProcessor()
 }
 
 //==============================================================================
-const String SpringTuningAudioProcessor::getName() const
-{
-    return JucePlugin_Name;
-}
-
-bool SpringTuningAudioProcessor::acceptsMidi() const
-{
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-bool SpringTuningAudioProcessor::producesMidi() const
-{
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-bool SpringTuningAudioProcessor::isMidiEffect() const
-{
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-double SpringTuningAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
-
-int SpringTuningAudioProcessor::getNumPrograms()
-{
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
-}
-
-int SpringTuningAudioProcessor::getCurrentProgram()
-{
-    return 0;
-}
-
-void SpringTuningAudioProcessor::setCurrentProgram (int index)
-{
-}
-
-const String SpringTuningAudioProcessor::getProgramName (int index)
-{
-    return {};
-}
-
-void SpringTuningAudioProcessor::changeProgramName (int index, const String& newName)
-{
-}
-
-//==============================================================================
 void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    osc.setSampleRate(sampleRate);
-    osc.setFrequency(220.0f);
+    for (int i = 0; i < 12; i++)
+    {
+        osc[i].setSampleRate(sampleRate);
+        osc[i].setHarmonics(15);
+        osc[i].setFrequency(stk::Midi2Pitch[48 + i]);
+    }
 }
 
-void SpringTuningAudioProcessor::releaseResources()
+// Get data from Spring tuning model and set frequencies / amplitudes of osc
+void SpringTuningAudioProcessor::block(void)
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    // Run physics simulate
+    physics.simulate();
+    
+    // GET FREQUENCIES FROM SPRING TUNING
+    for (int i = 0; i < 12; ++i)
+    {
+        osc[i].setFrequency(/*spring frequency*/ stk::Midi2Pitch[48 + i]);
+    }
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
-bool SpringTuningAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+float SpringTuningAudioProcessor::tick(float sample)
 {
-  #if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
+    sample = 0.0f;
+    
+    for (int i = 0; i < 12; i++)
+    {
+        // if osc is on, tick here, if not dont
+        sample += osc[i].tick();
+    }
+    
+    sample /= 12.0f;
+    
+    return sample;
 }
-#endif
 
 void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    
+    // Clear left and right channels
+    buffer.clear (0, 0, buffer.getNumSamples());
+    buffer.clear (1, 0, buffer.getNumSamples());
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    DBG("channels: " + String(totalNumInputChannels));
-    //for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    float sample = 0.0f;
+    
+    auto* left = buffer.getWritePointer (0);
+    auto* right = buffer.getWritePointer (1);
+    
+    for (auto i = 0; i < buffer.getNumSamples(); ++i)
     {
-        auto* channelData = buffer.getWritePointer (0);
-
-        for (auto i = 0; i < buffer.getNumSamples(); ++i)
-        {
-            //buffer.getSample(channel, i);
-            channelData[i] = 0.5f * osc.tick();
-           
-        }
+        sample = tick((left[i] + right[i]) * 0.5);
+        left[i] = sample;
+        right[i] = left[i];
     }
+    
+    
+    
 }
 
 //==============================================================================
@@ -198,3 +125,97 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SpringTuningAudioProcessor();
 }
+
+void SpringTuningAudioProcessor::releaseResources()
+{
+    // When playback stops, you can use this as an opportunity to free up any
+    // spare memory, etc.
+}
+
+#ifndef JucePlugin_PreferredChannelConfigurations
+bool SpringTuningAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+{
+#if JucePlugin_IsMidiEffect
+    ignoreUnused (layouts);
+    return true;
+#else
+    // This is the place where you check if the layout is supported.
+    // In this template code we only support mono or stereo.
+    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
+        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+        return false;
+    
+    // This checks if the input layout matches the output layout
+#if ! JucePlugin_IsSynth
+    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+        return false;
+#endif
+    
+    return true;
+#endif
+}
+#endif
+
+//==============================================================================
+const String SpringTuningAudioProcessor::getName() const
+{
+    return JucePlugin_Name;
+}
+
+bool SpringTuningAudioProcessor::acceptsMidi() const
+{
+#if JucePlugin_WantsMidiInput
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool SpringTuningAudioProcessor::producesMidi() const
+{
+#if JucePlugin_ProducesMidiOutput
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool SpringTuningAudioProcessor::isMidiEffect() const
+{
+#if JucePlugin_IsMidiEffect
+    return true;
+#else
+    return false;
+#endif
+}
+
+double SpringTuningAudioProcessor::getTailLengthSeconds() const
+{
+    return 0.0;
+}
+
+int SpringTuningAudioProcessor::getNumPrograms()
+{
+    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
+    // so this should be at least 1, even if you're not really implementing programs.
+}
+
+int SpringTuningAudioProcessor::getCurrentProgram()
+{
+    return 0;
+}
+
+void SpringTuningAudioProcessor::setCurrentProgram (int index)
+{
+}
+
+const String SpringTuningAudioProcessor::getProgramName (int index)
+{
+    return {};
+}
+
+void SpringTuningAudioProcessor::changeProgramName (int index, const String& newName)
+{
+}
+
+
