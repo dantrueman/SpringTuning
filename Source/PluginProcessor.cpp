@@ -24,6 +24,7 @@ SpringTuningAudioProcessor::SpringTuningAudioProcessor()
                        )
 #endif
 {
+   
 }
 
 SpringTuningAudioProcessor::~SpringTuningAudioProcessor()
@@ -97,6 +98,8 @@ void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    osc.setSampleRate(sampleRate);
+    osc.setFrequency(220.0f);
 }
 
 void SpringTuningAudioProcessor::releaseResources()
@@ -150,11 +153,17 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
+    DBG("channels: " + String(totalNumInputChannels));
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
 
-        // ..do something to the data...
+        for (auto i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            //buffer.getSample(channel, i);
+            channelData[i] = 0.5f * osc.tick();
+           
+        }
     }
 }
 
