@@ -11,11 +11,12 @@
 #include "Spring.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Spring::Spring(Particle firstPoint, Particle secondPoint, double length, double str) :
+Spring::Spring(Particle firstPoint, Particle secondPoint, double length, double str, double interval) :
 	a(firstPoint),
 	b(secondPoint),
 	springLength(length),
-	strength(str)
+	strength(str),
+	baseInterval(interval)
 {
 
 }
@@ -40,9 +41,14 @@ double Spring::getStrength()
 	return strength;
 }
 
+double Spring::getBaseInterval()
+{
+	return baseInterval;
+}
+
 Spring Spring::copy()
 {
-	Spring copySpring(a, b, springLength, strength);
+	Spring copySpring(a, b, springLength, strength, baseInterval);
 	return copySpring;
 }
 
@@ -51,7 +57,8 @@ bool Spring::compare(Spring that)
 	return (a.compare(that.getA()) &&
 		b.compare(that.getB()) &&
 		springLength == that.getLength() &&
-		strength == that.getStrength());
+		strength == that.getStrength() &&
+		baseInterval == that.getBaseInterval());
 }
 
 void Spring::print()
@@ -62,6 +69,7 @@ void Spring::print()
 	b.print();
 	DBG("\nLength: " + String(springLength));
 	DBG("Strength: " + String(strength));
+	DBG("Base Interval: " + String(baseInterval));
 }
 
 void Spring::lockA()
@@ -73,6 +81,74 @@ void Spring::lockB()
 {
 	b.changeLock();
 }
+
+void Spring::setStrength(double newStrength)
+{
+	strength = newStrength;
+}
+
+void Spring::adjustLength(double newLength)
+{
+	springLength = newLength;
+}
+
+/*
+String Spring::getStringBaseInterval()
+{
+	String result = "";
+	switch (baseInterval) 
+	{
+	case (double)(25.0 / 24.0) :
+		result = "Minor 2nd";
+		break;
+
+	case 9.0/8.0:
+		result = "Major 2nd";
+		break;
+
+	case 6.0/5.0:
+		result = "Minor 3rd";
+		break;
+
+	case 5.0/4.0:
+		result = "Major 3rd";
+		break;
+
+	case 4.0/3.0:
+		result = "Perfect 4th";
+		break;
+
+	case 45.0/32.0:
+		result = "Diminished 5th";
+		break;
+
+	case 3.0/2.0:
+		result = "Perfect 5th";
+		break;
+	
+	case 8.0/5.0:
+		result = "Minor 6th";
+		break;
+
+	case 5.0/3.0:
+		result = "Major 6th";
+		break;
+
+	case 9.0/5.0:
+		result = "Minor 7th";
+		break;
+
+	case 15.0/8.0:
+		result = "Major 7th";
+		break;
+
+	case 2.0:
+		result = "Octave";
+		break;
+	}
+	return result;
+}
+*/
 
 void Spring::satisfyConstraints(double distance)
 {

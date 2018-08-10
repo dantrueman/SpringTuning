@@ -9,3 +9,62 @@
 */
 
 #pragma once
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Particle.h"
+#include "Spring.h"
+
+class Physics
+{
+public:
+	Physics();
+	void simulate();
+
+	double noteToFreq(String whichNote);
+	int noteToCents(String whichNote);
+	int freqToCents(double whichFreq);
+	double centsToFreq(int whichNote);
+	int ratioToCents(double ratio);
+
+	void toggleSpring();
+
+	void addParticle(int noteIndex);
+	void removeParticle(int removeIndex);
+	void addNote(int noteIndex);
+	void removeNote(int noteIndex);
+
+	void updateNotes();
+	void updateFreq();
+
+	void addSpring(Spring s);
+	void removeSpring(Spring s);
+	void addSpringsByNote(int addIndex);
+	void removeSpringsByNote(int removeIndex);
+	void addSpringsByInterval(double interval);
+	void removeSpringsByInterval(double interval);
+	void adjustSpringsByInterval(double interval, double stiffness);
+
+private:
+	const String intervalLabels[12] = {"minor second",
+			"major second",
+			"minor third",
+			"major third",
+			"perfect fourth",
+			"dimished fifth",
+			"perfect fifth",
+			"minor sixth",
+			"major sixth",
+			"minor seventh",
+			"major seventh",
+			"octave"
+	};
+	String notesInAnOctave[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+	const int octaves[1] = { 4 }; //will return to when adding more octaves
+	const double cFreq = 261.6255653;
+	const double tuningArray[12] = {25.0 / 24.0, 9.0 / 8.0, 6.0 / 5.0, 5.0 / 4.0, 
+		4.0 / 3.0, 45.0 / 32.0, 3.0 / 2.0, 8.0 / 5.0, 5.0 / 3.0, 9.0 / 5.0, 15.0 / 8.0, 2.0};
+
+	Particle particleArray[12];
+	Spring springArray[65]; //I need to actually do my math here
+	bool particleEnabled[12];
+	bool springEnabled[65];
+};
