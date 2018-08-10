@@ -9,7 +9,8 @@
 */
 
 #pragma once
-#include "../JuceLibraryCode/JuceHeader.h"
+#include "PhysicsUtilities.h"
+
 #include "Particle.h"
 #include "Spring.h"
 
@@ -35,8 +36,8 @@ public:
 	void updateNotes();
 	void updateFreq();
 
-	void addSpring(Spring s);
-	void removeSpring(Spring s);
+	void addSpring(Spring* s);
+	void removeSpring(Spring* s);
 	void addSpringsByNote(int addIndex);
 	void removeSpringsByNote(int removeIndex);
 	void addSpringsByInterval(double interval);
@@ -63,8 +64,6 @@ private:
 	const double tuningArray[12] = {25.0 / 24.0, 9.0 / 8.0, 6.0 / 5.0, 5.0 / 4.0, 
 		4.0 / 3.0, 45.0 / 32.0, 3.0 / 2.0, 8.0 / 5.0, 5.0 / 3.0, 9.0 / 5.0, 15.0 / 8.0, 2.0};
 
-	Particle particleArray[12];
-	Spring springArray[65]; //I need to actually do my math here
-	bool particleEnabled[12];
-	bool springEnabled[65];
+	OwnedArray<Particle> particleArray;
+    OwnedArray<Spring> springArray;
 };

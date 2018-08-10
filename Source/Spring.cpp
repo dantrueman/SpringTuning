@@ -11,7 +11,7 @@
 #include "Spring.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Spring::Spring(Particle firstPoint, Particle secondPoint, double length, double str, double interval) :
+Spring::Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval) :
 	a(firstPoint),
 	b(secondPoint),
 	springLength(length),
@@ -21,12 +21,12 @@ Spring::Spring(Particle firstPoint, Particle secondPoint, double length, double 
 
 }
 
-Particle Spring::getA()
+Particle* Spring::getA()
 {
 	return a;
 }
 
-Particle Spring::getB()
+Particle* Spring::getB()
 {
 	return b;
 }
@@ -52,21 +52,21 @@ Spring Spring::copy()
 	return copySpring;
 }
 
-bool Spring::compare(Spring that)
+bool Spring::compare(Spring* that)
 {
-	return (a.compare(that.getA()) &&
-		b.compare(that.getB()) &&
-		springLength == that.getLength() &&
-		strength == that.getStrength() &&
-		baseInterval == that.getBaseInterval());
+	return (a->compare(that->getA()) &&
+		b->compare(that->getB()) &&
+		springLength == that->getLength() &&
+		strength == that->getStrength() &&
+		baseInterval == that->getBaseInterval());
 }
 
 void Spring::print()
 {
 	DBG("Point A:");
-	a.print();
+	a->print();
 	DBG("\nPoint B:");
-	b.print();
+	b->print();
 	DBG("\nLength: " + String(springLength));
 	DBG("Strength: " + String(strength));
 	DBG("Base Interval: " + String(baseInterval));
@@ -74,12 +74,12 @@ void Spring::print()
 
 void Spring::lockA()
 {
-	a.changeLock();
+	a->changeLock();
 }
 
 void Spring::lockB()
 {
-	b.changeLock();
+	b->changeLock();
 }
 
 void Spring::setStrength(double newStrength)
@@ -152,18 +152,18 @@ String Spring::getStringBaseInterval()
 
 void Spring::satisfyConstraints(double distance)
 {
-	double diffX = b.getX() - a.getX();
-	double diffY = b.getY() - a.getY();
+	double diffX = b->getX() - a->getX();
+	double diffY = b->getY() - a->getY();
 	double currentDist = sqrt(diffX * diffX + diffY * diffY);
 	if (currentDist == 0.0) return;
 	
 	diffX *= ((currentDist - distance) / currentDist) * 0.5;
 	diffY *= ((currentDist - distance) / currentDist) * 0.5;
 	
-	a.addX(diffX);
-	a.addY(diffY);
-	b.subX(diffX);
-	b.subY(diffY);
+	a->addX(diffX);
+	a->addY(diffY);
+	b->subX(diffX);
+	b->subY(diffY);
 	
 	/*
 	Aatish's spring function

@@ -56,15 +56,15 @@ void Particle::changeLock()
 	locked = !locked;
 }
 
-Particle Particle::copy()
+Particle* Particle::copy()
 {
-	Particle c(x, y, w, locked);
-	return c;
+	return new Particle(x, y, w, locked);
+	
 }
 
-bool Particle::compare(Particle that)
+bool Particle::compare(Particle* that)
 {
-	return (x == that.getX() && y == that.getY() && w == that.getWeight() && locked == that.getLocked());
+	return (x == that->getX() && y == that->getY() && w == that->getWeight() && locked == that->getLocked());
 }
 
 void Particle::print()

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "PhysicsUtilities.h"
+
 class Particle
 {
 public:
@@ -20,14 +22,17 @@ public:
 	bool getLocked();
 	void lock();
 	void changeLock();
-	Particle copy();
-	bool compare(Particle that);
+	Particle* copy();
+	bool compare(Particle* that);
 	void print();
 	void addX(double that);
 	void addY(double that);
 	void subX(double that);
 	void subY(double that);
 	void integrate();
+    
+    bool getEnabled(void)   { return enabled; }
+    void setEnabled(bool e) { enabled = e; }
 private:
 	double x;
 	double y;
@@ -35,4 +40,5 @@ private:
 	double prevY;
 	double w;
 	bool locked;
+    bool enabled;
 };

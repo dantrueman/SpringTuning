@@ -12,39 +12,42 @@
 
 using namespace std;
 
-Physics::Physics() :
+Physics::Physics(void)
 {
-
 	double defaultStrength = 0.2;
+    
+    particleArray.ensureStorageAllocated(12);
 
 	for (int i = 0; i < 12; i++)
 	{
-		Particle p(i, 0.0, 1.0);
-		particleArray[i] = p;
-		particleEnabled[i] = false;
+        Particle* particle = new Particle(i, 0.0, 1.0);
+        particle->setEnabled(false);
+        particleArray.add(particle);
 	}
 
-	int index = 0;
+    springArray.ensureStorageAllocated(100);
 	for (int i = 0; i < 12; i++)
 	{
 		for (int j = 0; j < i; j++)
 		{
 			//will add in a better length calculation method once mapping is figured out
-			Spring s(particleArray[i], particleArray[j], i - j, defaultStrength);
-			springArray[index] = s;
-			springEnabled[index] = false;
-			index++;
+            Spring* spring = new Spring(particleArray[i],
+                                        particleArray[j],
+                                        i - j,
+                                        defaultStrength, /*wrong*/ 0);
+            spring->setEnabled(false);
+            springArray.add(spring);
 		}
 	}
 };
 void Physics::simulate()
 {
-	for (int i = 0; i < 12; i++)
-	{
-		if (particleEnabled[i]) particleArray[i].integrate();
+    for (auto particle : particleArray)
+    {
+		if (particle->getEnabled()) particle->integrate();
 	}
+    
 	//something about distance, integrating particles
-
 
 	//Aatish's function
 	/*
@@ -67,7 +70,8 @@ void Physics::simulate()
 double Physics::noteToFreq(String whichNote)
 {
 	int lowestNote = 60; //need to check my math
-	int noteIndex = Array::IndexOf(notesInAnOctave, whichNote); // will eventually need to change
+    int noteIndex = 60;
+	//int noteIndex = Array::indexOf(notesInAnOctave, whichNote); // will eventually need to change
 	return (double)(cFreq * pow(2.0, noteIndex / 12.0)); // will need to change when multiple octaves are added
 }
 int Physics::noteToCents(String whichNote)
@@ -92,13 +96,13 @@ void Physics::toggleSpring()
 	//tbd
 }
 
-void Physics::addParticle(int noteIndex)
+void Physics::addParticle(int index)
 {
-	if (!particleEnabled[noteIndex]) particleEnabled[noteIndex] = true;
+    particleArray[index]->setEnabled(true);
 }
-void Physics::removeParticle(int removeIndex)
+void Physics::removeParticle(int index)
 {
-	if (particleEnabled[removeIndex]) particleEnabled[removeIndex] = false;
+    particleArray[index]->setEnabled(false);
 }
 void Physics::addNote(int noteIndex)
 {
@@ -121,56 +125,71 @@ void Physics::updateFreq()
 	//tbd
 }
 
-void Physics::addSpring(Spring s)
+void Physics::addSpring(Spring* s)
 {
-	int index = Array::IndexOf(springArray, s);
-	if (!springEnabled[index]) springEnabled[index] = true;
+    s->setEnabled(true);
 }
 
-void Physics::removeSpring(Spring s)
+void Physics::removeSpring(Spring* s)
 {
-	int index = Array::IndexOf(springArray, s);
-	if (springEnabled[index]) springEnabled[index] = false;
+    s->setEnabled(false);
+    
 }
 void Physics::addSpringsByNote(int addIndex)
 {
-	Particle p = particleArray[addIndex];
-	for (int i = 0; i < 65; i++) //I need to set a variable for number of springs
-	{
-		Spring s = springArray[i];
-		if ((s.getA().compare(p) || s.getB().compare(p)) && !springEnabled[i]) springEnabled[i] = true;
+    Particle* p = particleArray[addIndex];
+    for (auto spring : springArray)
+    {
+        Particle* particleA = spring->getA();
+        Particle* particleB = spring->getB();
+        
+		if (!spring->getEnabled() && (particleA->compare(p) || particleB->compare(p)))
+        {
+            spring->setEnabled(true);
+        }
 	}
 }
 void Physics::removeSpringsByNote(int removeIndex)
 {
-	Particle p = particleArray[removeIndex];
-	for (int i = 0; i < 65; i++) //I need to set a variable for number of springs
+	Particle* p = particleArray[removeIndex];
+	for (auto spring : springArray)
 	{
-		Spring s = springArray[i];
-		if ((s.getA().compare(p) || s.getB().compare(p)) && springEnabled[i]) springEnabled[i] = false;
+        Particle* particleA = spring->getA();
+        Particle* particleB = spring->getB();
+        
+		if (spring->getEnabled() && (particleA->compare(p) || particleB->compare(p)))
+        {
+            spring->setEnabled(false);
+        }
 	}
 }
 void Physics::addSpringsByInterval(double interval)
 {
-	for (int i = 0; i < 65; i++) //I need to set a variable for number of springs
+	for (auto spring : springArray)
 	{
-		Spring s = springArray[i];
-		if ((abs(s.getBaseInterval() - interval) <= 0.001) && !springEnabled[i]) springEnabled[i] = true;
+        if (!spring->getEnabled() && (abs(spring->getBaseInterval() - interval) <= 0.001))
+        {
+            spring->setEnabled(true);
+        }
 	}
 }
 void Physics::removeSpringsByInterval(double interval)
 {
-	for (int i = 0; i < 65; i++) //I need to set a variable for number of springs
+    for (auto spring : springArray)
 	{
-		Spring s = springArray[i];
-		if ((abs(s.getBaseInterval() - interval) <= 0.001) && springEnabled[i]) springEnabled[i] = false;
+        if (spring->getEnabled() && (abs(spring->getBaseInterval() - interval) <= 0.001))
+        {
+            spring->setEnabled(false);
+        }
 	}
 }
 void Physics::adjustSpringsByInterval(double interval, double stiffness)
 {
-	for (int i = 0; i < 65; i++) //I need to set a variable for number of springs
+	for (auto spring : springArray)
 	{
-		Spring s = springArray[i];
-		if (((abs(s.getBaseInterval() - interval)) <= 0.001)) s.setStrength(stiffness);
+		if (((abs(spring->getBaseInterval() - interval)) <= 0.001))
+        {
+            spring->setStrength(stiffness);
+        }
 	}
 }

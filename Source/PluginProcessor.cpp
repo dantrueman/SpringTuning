@@ -154,9 +154,9 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
     DBG("channels: " + String(totalNumInputChannels));
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    //for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        auto* channelData = buffer.getWritePointer (0);
 
         for (auto i = 0; i < buffer.getNumSamples(); ++i)
         {
