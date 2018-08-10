@@ -11,13 +11,13 @@
 #include "Particle.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Particle::Particle(double xVal, double yVal, double weight, bool startLocked = true) :
-	x(xVal),
-	y(yVal),
-	prevX(xVal),
-	prevY(yVal),
-	w(weight),
-	locked(startLocked)
+Particle::Particle(double xVal, double yVal, double weight, bool startLocked):
+x(xVal),
+y(yVal),
+prevX(xVal),
+prevY(yVal),
+w(weight),
+locked(startLocked)
 {
 
 }
