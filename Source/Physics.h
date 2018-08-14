@@ -21,6 +21,7 @@ public:
 	void simulate();
 
 	double noteToFreq(String whichNote);
+	double posToFreq(double position);
 	int noteToCents(String whichNote);
 	int freqToCents(double whichFreq);
 	double centsToFreq(int whichNote);
@@ -43,6 +44,9 @@ public:
 	void addSpringsByInterval(double interval);
 	void removeSpringsByInterval(double interval);
 	void adjustSpringsByInterval(double interval, double stiffness);
+
+	double getFrequency(int index);
+	bool pitchEnabled(int index);
 
 private:
 	const String intervalLabels[12] = {"minor second",

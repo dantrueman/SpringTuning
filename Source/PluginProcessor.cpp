@@ -51,7 +51,7 @@ void SpringTuningAudioProcessor::block(void)
     // GET FREQUENCIES FROM SPRING TUNING
     for (int i = 0; i < 12; ++i)
     {
-        osc[i].setFrequency(/*spring frequency*/ stk::Midi2Pitch[48 + i]);
+        osc[i].setFrequency(physics.getFrequency(i));
     }
 }
 
@@ -62,7 +62,7 @@ float SpringTuningAudioProcessor::tick(float sample)
     for (int i = 0; i < 12; i++)
     {
         // if osc is on, tick here, if not dont
-        sample += osc[i].tick();
+		if (physics.pitchEnabled(i)) sample += osc[i].tick();
     }
     
     sample /= 12.0f;

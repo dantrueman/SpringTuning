@@ -46,6 +46,11 @@ void Physics::simulate()
     {
 		if (particle->getEnabled()) particle->integrate();
 	}
+
+	for (auto spring : springArray)
+	{
+		if (spring->getEnabled()) spring->satisfyConstraints();
+	}
     
 	//something about distance, integrating particles
 
@@ -74,6 +79,13 @@ double Physics::noteToFreq(String whichNote)
 	//int noteIndex = Array::indexOf(notesInAnOctave, whichNote); // will eventually need to change
 	return (double)(cFreq * pow(2.0, noteIndex / 12.0)); // will need to change when multiple octaves are added
 }
+
+double Physics::posToFreq(double position)
+{
+	double noteValue = 60.0 + position;
+	return (double)(cFreq * pow(2.0, noteValue / 12.0)); // will need to change when multiple octaves are added
+}
+
 int Physics::noteToCents(String whichNote)
 {
 	return (int)(freqToCents(noteToFreq(whichNote)));
@@ -115,11 +127,13 @@ void Physics::removeNote(int noteIndex)
 	removeSpringsByNote(noteIndex);
 }
 
+//probably not necessary until UI?
 void Physics::updateNotes()
 {
 	//tbd
 }
 
+//probably not necessary until UI?
 void Physics::updateFreq()
 {
 	//tbd
@@ -192,4 +206,14 @@ void Physics::adjustSpringsByInterval(double interval, double stiffness)
             spring->setStrength(stiffness);
         }
 	}
+}
+
+double Physics::getFrequency(int index)
+{
+	return posToFreq(particleArray[index]->getX());
+}
+
+bool Physics::pitchEnabled(int index)
+{
+	return particleArray[index]->getEnabled();
 }

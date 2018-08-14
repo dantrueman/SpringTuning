@@ -150,15 +150,16 @@ String Spring::getStringBaseInterval()
 }
 */
 
-void Spring::satisfyConstraints(double distance)
+//still needs tweaking
+void Spring::satisfyConstraints()
 {
 	double diffX = b->getX() - a->getX();
 	double diffY = b->getY() - a->getY();
 	double currentDist = sqrt(diffX * diffX + diffY * diffY);
 	if (currentDist == 0.0) return;
 	
-	diffX *= ((currentDist - distance) / currentDist) * 0.5;
-	diffY *= ((currentDist - distance) / currentDist) * 0.5;
+	diffX *= ((currentDist - springLength) / currentDist) * 0.5;
+	diffY *= ((currentDist - springLength) / currentDist) * 0.5;
 	
 	a->addX(diffX);
 	a->addY(diffY);

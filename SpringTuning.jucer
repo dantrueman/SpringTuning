@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="UaOpeg" name="SpringTuning" projectType="audioplug" jucerVersion="5.3.2"
-              pluginFormats="buildStandalone" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn">
+<JUCERPROJECT id="UaOpeg" name="SpringTuning" projectType="audioplug" jucerVersion="5.3.0"
+              pluginFormats="buildStandalone" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
+              buildVST="0" buildAU="0" buildStandalone="1">
   <MAINGROUP id="S5LXEj" name="SpringTuning">
     <GROUP id="{AE28F8EE-03E7-46C2-2FE3-7DE7F2882AA6}" name="Source">
       <GROUP id="{E8A73094-C298-3639-E873-EE360624918C}" name="Core">
