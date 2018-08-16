@@ -24,7 +24,7 @@ SpringTuningAudioProcessor::SpringTuningAudioProcessor()
                        )
 #endif
 {
-   
+
 }
 
 SpringTuningAudioProcessor::~SpringTuningAudioProcessor()
@@ -45,7 +45,7 @@ void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 // Get data from Spring tuning model and set frequencies / amplitudes of osc
 void SpringTuningAudioProcessor::block(void)
 {
-    // Run physics simulate
+    // Run physics simulation
     physics.simulate();
     
     // GET FREQUENCIES FROM SPRING TUNING
@@ -99,7 +99,13 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
 	{
 		int noteNumber = (m.getNoteNumber() % 12) + 60;
-		if (m.isNoteOn()) physics.toggleNote(noteNumber);
+		DBG("message at " + String(noteNumber));
+		if (m.isNoteOn())
+		{
+			DBG("note on, toggling note");
+			physics.toggleNote(noteNumber);
+		}
+		else DBG("ntoe off, doing nothing");
 	}
     
 }

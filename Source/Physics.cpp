@@ -128,14 +128,17 @@ void Physics::removeNote(int noteIndex)
 }
 void Physics::toggleNote(int noteIndex)
 {
+	int convertedIndex = noteIndex % 12; // just in case a midi value is passed accidentally
+	DBG("calling " + String(convertedIndex) + " in toggleNote()");
+	particleArray[noteIndex]->print();
 	if (particleArray[noteIndex]->getEnabled())
 	{
-		DBG("Adding " + notesInAnOctave[noteIndex] + " to list.");
+		DBG("Removing " + notesInAnOctave[noteIndex] + " from list.");
 		removeNote(noteIndex);
 	}
 	else
 	{
-		DBG("Removing " + notesInAnOctave[noteIndex] + " to list.");
+		DBG("Adding " + notesInAnOctave[noteIndex] + " to list.");
 		addNote(noteIndex);
 	}
 }
@@ -235,6 +238,9 @@ void Physics::print()
 {
 	for (int i = 0; i < 12; i++)
 	{
-		DBG(notesInAnOctave[i] + " = " + String(getFrequency(i)));
+		String printStatus = "";
+		if (particleArray[i]->getEnabled()) printStatus = " (enabled)";
+		else printStatus = " (disabled)";
+		DBG(notesInAnOctave[i] + " = " + String(getFrequency(i)) + printStatus);
 	}
 }

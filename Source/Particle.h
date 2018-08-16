@@ -33,6 +33,8 @@ public:
     
     bool getEnabled(void)   { return enabled; }
     void setEnabled(bool e) { enabled = e; }
+
+	void confirmEnabled();
 private:
 	double x;
 	double y;

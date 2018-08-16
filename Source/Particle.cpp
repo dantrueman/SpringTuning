@@ -73,6 +73,14 @@ void Particle::print()
 	DBG("Position: (" + String(x) + ", " + String(y) + ")");
 	DBG("Weight: " + String(w));
 	DBG("Locked: " + String(int(locked)));
+	if (enabled) DBG("Currently enabled");
+	else DBG("Currently disabled");
+}
+
+void Particle::confirmEnabled()
+{
+	if (enabled) DBG("Currently enabled");
+	else DBG("Currently disabled");
 }
 
 void Particle::addX(double that)
