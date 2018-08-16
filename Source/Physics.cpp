@@ -83,7 +83,7 @@ double Physics::noteToFreq(String whichNote)
 double Physics::posToFreq(double position)
 {
 	double noteValue = 60.0 + position;
-	return (double)(cFreq * pow(2.0, noteValue / 12.0)); // will need to change when multiple octaves are added
+	return (double)(cFreq * pow(2.0, noteValue / 12.0)) / 32; // will need to change when multiple octaves are added
 }
 
 int Physics::noteToCents(String whichNote)
@@ -125,6 +125,19 @@ void Physics::removeNote(int noteIndex)
 {
 	removeParticle(noteIndex);
 	removeSpringsByNote(noteIndex);
+}
+void Physics::toggleNote(int noteIndex)
+{
+	if (particleArray[noteIndex]->getEnabled())
+	{
+		DBG("Adding " + notesInAnOctave[noteIndex] + " to list.");
+		removeNote(noteIndex);
+	}
+	else
+	{
+		DBG("Removing " + notesInAnOctave[noteIndex] + " to list.");
+		addNote(noteIndex);
+	}
 }
 
 //probably not necessary until UI?
@@ -216,4 +229,12 @@ double Physics::getFrequency(int index)
 bool Physics::pitchEnabled(int index)
 {
 	return particleArray[index]->getEnabled();
+}
+
+void Physics::print()
+{
+	for (int i = 0; i < 12; i++)
+	{
+		DBG(notesInAnOctave[i] + " = " + String(getFrequency(i)));
+	}
 }

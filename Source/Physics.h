@@ -33,6 +33,7 @@ public:
 	void removeParticle(int removeIndex);
 	void addNote(int noteIndex);
 	void removeNote(int noteIndex);
+	void toggleNote(int noteIndex);
 
 	void updateNotes();
 	void updateFreq();
@@ -47,6 +48,8 @@ public:
 
 	double getFrequency(int index);
 	bool pitchEnabled(int index);
+
+	void print();
 
 private:
 	const String intervalLabels[12] = {"minor second",

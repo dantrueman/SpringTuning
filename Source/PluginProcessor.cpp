@@ -66,6 +66,8 @@ float SpringTuningAudioProcessor::tick(float sample)
     }
     
     sample /= 12.0f;
+
+	physics.print();
     
     return sample;
 }
@@ -90,7 +92,15 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
         right[i] = left[i];
     }
     
-    
+
+	MidiMessage m;
+	int time;
+
+	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
+	{
+		int noteNumber = (m.getNoteNumber() % 12) + 60;
+		if (m.isNoteOn()) physics.toggleNote(noteNumber);
+	}
     
 }
 

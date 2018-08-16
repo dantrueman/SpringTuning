@@ -15,7 +15,7 @@
 class Particle
 {
 public:
-	Particle(double xVal, double yVal, double weight, bool startLocked = true);
+	Particle(double xVal, double yVal, double weight, bool startLocked = true, bool startEnabled = false);
 	double getX();
 	double getY();
 	double getWeight();
