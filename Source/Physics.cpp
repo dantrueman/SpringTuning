@@ -49,7 +49,8 @@ void Physics::simulate()
 
 	for (auto spring : springArray)
 	{
-		if (spring->getEnabled()) spring->satisfyConstraints();
+		double interval = tuningArray[(int)(round(spring->getB() - spring->getA()))];
+		if (spring->getEnabled()) spring->satisfyConstraints(interval);
 	}
     
 	//something about distance, integrating particles

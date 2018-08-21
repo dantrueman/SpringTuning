@@ -29,7 +29,7 @@ public:
 	void setStrength(double newStrength);
 	void adjustLength(double newLength);
 	//String getStringBaseInterval();
-	void satisfyConstraints();
+	void satisfyConstraints(double distance);
     
     bool getEnabled(void) { return enabled; }
     void setEnabled(bool e) { enabled = e; }

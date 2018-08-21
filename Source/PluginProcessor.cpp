@@ -24,8 +24,7 @@ SpringTuningAudioProcessor::SpringTuningAudioProcessor()
                        )
 #endif
 {
-	physics.print();
-	physics.printParticles();
+
 }
 
 SpringTuningAudioProcessor::~SpringTuningAudioProcessor()
@@ -104,8 +103,8 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 		if (m.isNoteOn())
 		{
 			DBG("note on, toggling note");
-			//physics.printParticles();
 			physics.toggleNote(noteNumber);
+			physics.print();
 		}
 		else DBG("note off, doing nothing");
 	}
