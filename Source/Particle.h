@@ -20,7 +20,9 @@ public:
 	double getY();
 	double getWeight();
 	bool getLocked();
+	void useLock();
 	void lock();
+	void unlock();
 	void changeLock();
 	Particle* copy();
 	bool compare(Particle* that);

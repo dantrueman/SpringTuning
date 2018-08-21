@@ -160,6 +160,8 @@ void Spring::satisfyConstraints(double distance)
 	
 	diffX *= ((currentDist - distance) / currentDist) * 0.5;
 	diffY *= ((currentDist - distance) / currentDist) * 0.5;
+
+	DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
 	
 	a->addX(diffX);
 	a->addY(diffY);

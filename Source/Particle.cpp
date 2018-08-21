@@ -43,13 +43,24 @@ bool Particle::getLocked()
 	return locked;
 }
 
-void Particle::lock()
+void Particle::useLock()
 {
 	if (locked)
 	{
 		prevX = x;
 		prevY = y;
 	}
+}
+
+void Particle::lock()
+{
+	locked = true;
+	useLock();
+}
+
+void Particle::unlock()
+{
+	locked = false;
 }
 
 void Particle::changeLock()
@@ -105,20 +116,24 @@ void Particle::subY(double that)
 
 void Particle::integrate()
 {
-	double drag = 1.0; //still need to figure this one out
-	double newX = x - prevX;
-	double newY = y - prevY;
+	if (!locked)
+	{
+		double drag = 1.0; //still need to figure this one out
+		double newX = x - prevX;
+		double newY = y - prevY;
 
-	newX *= drag;
-	newY *= drag;
+		newX *= drag;
+		newY *= drag;
 
-	newX += x;
-	newY += y;
+		newX += x;
+		newY += y;
 
-	prevX = x;
-	prevY = y;
-	x = newX;
-	y = newY;
+		prevX = x;
+		prevY = y;
+		x = newX;
+		y = newY;
+
+	}
 
 	//Aatish's function:
 	/*

@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class SpringTuningAudioProcessorEditor  : public AudioProcessorEditor
+class SpringTuningAudioProcessorEditor  : public KeyListener, public AudioProcessorEditor
 {
 public:
     SpringTuningAudioProcessorEditor (SpringTuningAudioProcessor&);
@@ -25,6 +25,7 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+	bool keyPressed(const KeyPress& e, Component*) override;
 
 private:
     // This reference is provided as a quick way for your editor to

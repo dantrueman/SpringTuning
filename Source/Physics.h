@@ -76,4 +76,5 @@ private:
 
 	OwnedArray<Particle> particleArray;
     OwnedArray<Spring> springArray;
+	int numNotes; // number of enabled notes
 };

@@ -45,6 +45,8 @@ void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 // Get data from Spring tuning model and set frequencies / amplitudes of osc
 void SpringTuningAudioProcessor::block(void)
 {
+	DBG("running block");
+
     // Run physics simulation
     physics.simulate();
     
@@ -109,67 +111,6 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 		else DBG("note off, doing nothing");
 	}
     
-}
-
-bool SpringTuningAudioProcessor::keyPressed(const KeyPress& e, Component*)
-{
-	DBG("key has been pressed");
-
-	int code = e.getKeyCode();
-
-	//keyboard setup is that keys a through j (2nd row on keyboard) represent white keys
-	//keys w, e, t, y, u represent black keys
-
-	if (code == 65) // key A, equals C
-	{
-		physics.toggleNote(0);
-	}
-	else if (code == 87) // key W, equals C#
-	{
-		physics.toggleNote(1);
-	}
-	else if (code == 83) // key S, equals D
-	{
-		physics.toggleNote(2);
-	}
-	else if (code == 69) //key E, equals D#
-	{
-		physics.toggleNote(3);
-	}
-	else if (code == 68) //key D, equals E
-	{
-		physics.toggleNote(4);
-	}
-	else if (code == 70) //key F, equals F
-	{
-		physics.toggleNote(5);
-	}
-	else if (code == 84) // key T, equals F#
-	{
-		physics.toggleNote(6);
-	}
-	else if (code == 71) //key G, equals G
-	{
-		physics.toggleNote(7);
-	}
-	else if (code == 89) //key Y, equals G#
-	{
-		physics.toggleNote(8);
-	}
-	else if (code == 72) // key h, equals A
-	{
-		physics.toggleNote(9);
-	}
-	else if (code == 85) // key u, equals A#
-	{
-		physics.toggleNote(10);
-	}
-	else if (code == 74) // key j, equals B
-	{
-		physics.toggleNote(11);
-	}
-
-	return true;
 }
 
 
@@ -295,6 +236,61 @@ const String SpringTuningAudioProcessor::getProgramName (int index)
 
 void SpringTuningAudioProcessor::changeProgramName (int index, const String& newName)
 {
+}
+
+void SpringTuningAudioProcessor::adjustNoteFromKeycode(int code)
+{
+	//keyboard setup is that keys a through j (2nd row on keyboard) represent white keys
+	//keys w, e, t, y, u represent black keys
+
+	if (code == 65) // key A, equals C
+	{
+		physics.toggleNote(0);
+	}
+	else if (code == 87) // key W, equals C#
+	{
+		physics.toggleNote(1);
+	}
+	else if (code == 83) // key S, equals D
+	{
+		physics.toggleNote(2);
+	}
+	else if (code == 69) //key E, equals D#
+	{
+		physics.toggleNote(3);
+	}
+	else if (code == 68) //key D, equals E
+	{
+		physics.toggleNote(4);
+	}
+	else if (code == 70) //key F, equals F
+	{
+		physics.toggleNote(5);
+	}
+	else if (code == 84) // key T, equals F#
+	{
+		physics.toggleNote(6);
+	}
+	else if (code == 71) //key G, equals G
+	{
+		physics.toggleNote(7);
+	}
+	else if (code == 89) //key Y, equals G#
+	{
+		physics.toggleNote(8);
+	}
+	else if (code == 72) // key h, equals A
+	{
+		physics.toggleNote(9);
+	}
+	else if (code == 85) // key u, equals A#
+	{
+		physics.toggleNote(10);
+	}
+	else if (code == 74) // key j, equals B
+	{
+		physics.toggleNote(11);
+	}
 }
 
 

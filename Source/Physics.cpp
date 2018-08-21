@@ -39,6 +39,8 @@ Physics::Physics(void)
             springArray.add(spring);
 		}
 	}
+
+	numNotes = 0;
 };
 void Physics::simulate()
 {
@@ -112,10 +114,15 @@ void Physics::toggleSpring()
 void Physics::addParticle(int index)
 {
     particleArray[index]->setEnabled(true);
+	if (numNotes == 0) particleArray[index]->lock(); // locks the first note and unlocks subsequent notes
+	else particleArray[index]->unlock();
+	numNotes++;
 }
 void Physics::removeParticle(int index)
 {
     particleArray[index]->setEnabled(false);
+	particleArray[index]->lock(); // automatically locks when turned off
+	numNotes--;
 }
 void Physics::addNote(int noteIndex)
 {

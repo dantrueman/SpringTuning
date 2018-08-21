@@ -40,3 +40,14 @@ void SpringTuningAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 }
+
+bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
+{
+	DBG("key has been pressed");
+
+	int code = e.getKeyCode();
+
+	processor.adjustNoteFromKeycode(code);
+
+	return true;
+}
