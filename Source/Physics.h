@@ -50,6 +50,9 @@ public:
 	bool pitchEnabled(int index);
 
 	void print();
+	void printParticles();
+
+	bool checkEnabledParticle(int index);
 
 private:
 	const String intervalLabels[12] = {"minor second",

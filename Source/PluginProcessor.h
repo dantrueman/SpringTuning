@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class SpringTuningAudioProcessor  : public AudioProcessor
+class SpringTuningAudioProcessor  : public KeyListener, public AudioProcessor
 {
 public:
     //==============================================================================
@@ -56,6 +56,8 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+	bool keyPressed(const KeyPress& e, Component*) override;
 
 private:
     void block(void);
