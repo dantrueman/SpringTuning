@@ -18,12 +18,17 @@ Physics::Physics(void)
     
     particleArray.ensureStorageAllocated(12);
 
+	double xValue = cFreq;
+
 	for (int i = 0; i < 12; i++)
 	{
-        Particle* particle = new Particle(i, 0.0, 1.0);
+        Particle* particle = new Particle(xValue, 0.0, 1.0);
         particle->setEnabled(false);
         particleArray.add(particle);
+		xValue *= halfStepRatio;
 	}
+
+	DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
 
     springArray.ensureStorageAllocated(100);
 	for (int i = 0; i < 12; i++)
@@ -31,10 +36,10 @@ Physics::Physics(void)
 		for (int j = 0; j < i; j++)
 		{
 			//will add in a better length calculation method once mapping is figured out
-            Spring* spring = new Spring(particleArray[i],
-                                        particleArray[j],
-                                        i - j,
-                                        defaultStrength, /*wrong*/ 0);
+            Spring* spring = new Spring(particleArray[j],
+                                        particleArray[i],
+                                        particleArray[i]->getX() - particleArray[j]->getX(),
+                                        defaultStrength, tuningArray[i - j], i - j);
             spring->setEnabled(false);
             springArray.add(spring);
 		}
@@ -51,7 +56,7 @@ void Physics::simulate()
 
 	for (auto spring : springArray)
 	{
-		double interval = tuningArray[(int)(round(spring->getB() - spring->getA()))];
+		double interval = tuningArray[spring->getIntervalIndex()];
 		if (spring->getEnabled()) spring->satisfyConstraints(interval);
 	}
     
@@ -83,6 +88,7 @@ double Physics::noteToFreq(String whichNote)
 	return (double)(cFreq * pow(2.0, noteIndex / 12.0)); // will need to change when multiple octaves are added
 }
 
+//need to changec
 double Physics::posToFreq(double position)
 {
 	double noteValue = 60.0 + position;
@@ -114,7 +120,7 @@ void Physics::toggleSpring()
 void Physics::addParticle(int index)
 {
     particleArray[index]->setEnabled(true);
-	if (numNotes == 0) particleArray[index]->lock(); // locks the first note and unlocks subsequent notes
+	if (numNotes == 0) particleArray[index]->lock(); // locks the first note, otherwise unlocks
 	else particleArray[index]->unlock();
 	numNotes++;
 }
@@ -180,9 +186,17 @@ void Physics::addSpringsByNote(int addIndex)
         Particle* particleA = spring->getA();
         Particle* particleB = spring->getB();
         
-		if (!spring->getEnabled() && (particleA->compare(p) || particleB->compare(p)))
+		if (!spring->getEnabled())
         {
-            spring->setEnabled(true);
+			// sets the spring to enabled if one spring matches the index and the other is enabled
+			if (particleA->compare(p))
+			{
+				if (particleB->getEnabled()) spring->setEnabled(true);
+			}
+			else if (particleB->compare(p))
+			{
+				if (particleA->getEnabled()) spring->setEnabled(true);
+			}
         }
 	}
 }
@@ -233,7 +247,7 @@ void Physics::adjustSpringsByInterval(double interval, double stiffness)
 
 double Physics::getFrequency(int index)
 {
-	return posToFreq(particleArray[index]->getX());
+	return particleArray[index]->getX();
 }
 
 bool Physics::pitchEnabled(int index)
@@ -260,7 +274,33 @@ void Physics::printParticles()
 	}
 }
 
+void Physics::printActiveParticles()
+{
+	for (int i = 0; i < 12; i++)
+	{
+		if (particleArray[i]->getEnabled()) particleArray[i]->print();
+	}
+}
+
+void Physics::printActiveSprings()
+{
+	for (auto spring : springArray)
+	{
+		if (spring->getEnabled()) spring->print();
+	}
+}
+
 bool Physics::checkEnabledParticle(int index)
 {
 	return particleArray[index]->getEnabled();
+}
+
+double Physics::halfStepUp(double freq)
+{
+	return freq * halfStepRatio;
+}
+
+double Physics::halfStepDown(double freq)
+{
+	return freq / halfStepRatio;
 }

@@ -15,12 +15,13 @@
 class Spring
 {
 public:
-	Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval);
+	Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index);
 	Particle* getA(void);
 	Particle* getB(void);
 	double getLength();
 	double getStrength();
 	double getBaseInterval();
+	int getIntervalIndex();
 	Spring copy();
 	bool compare(Spring* that);
 	void print();
@@ -40,6 +41,7 @@ private:
 	double strength;
 	double baseInterval;
     bool enabled;
+	int intervalIndex; //will probably replace base interval
 };
 
 #pragma once

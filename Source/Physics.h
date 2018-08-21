@@ -51,8 +51,13 @@ public:
 
 	void print();
 	void printParticles();
+	void printActiveParticles();
+	void printActiveSprings();
 
 	bool checkEnabledParticle(int index);
+
+	double halfStepUp(double freq);
+	double halfStepDown(double freq);
 
 private:
 	const String intervalLabels[12] = {"minor second",
@@ -71,6 +76,7 @@ private:
 	String notesInAnOctave[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 	const int octaves[1] = { 4 }; //will return to when adding more octaves
 	const double cFreq = 261.6255653;
+	const double halfStepRatio = 1.0595;
 	const double tuningArray[12] = {25.0 / 24.0, 9.0 / 8.0, 6.0 / 5.0, 5.0 / 4.0, 
 		4.0 / 3.0, 45.0 / 32.0, 3.0 / 2.0, 8.0 / 5.0, 5.0 / 3.0, 9.0 / 5.0, 15.0 / 8.0, 2.0};
 

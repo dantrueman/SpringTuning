@@ -15,10 +15,9 @@
 class Particle
 {
 public:
-	Particle(double xVal, double yVal, double weight, bool startLocked = true, bool startEnabled = false);
+	Particle(double xVal, double yVal, bool startLocked = true, bool startEnabled = false);
 	double getX();
 	double getY();
-	double getWeight();
 	bool getLocked();
 	void useLock();
 	void lock();
@@ -42,7 +41,6 @@ private:
 	double y;
 	double prevX;
 	double prevY;
-	double w;
 	bool locked;
     bool enabled;
 };

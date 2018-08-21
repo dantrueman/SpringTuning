@@ -45,16 +45,17 @@ void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 // Get data from Spring tuning model and set frequencies / amplitudes of osc
 void SpringTuningAudioProcessor::block(void)
 {
-	DBG("running block");
+    //moved to tick for now
+	/*
+	// Run physics simulation
+	physics.simulate();
 
-    // Run physics simulation
-    physics.simulate();
-    
-    // GET FREQUENCIES FROM SPRING TUNING
-    for (int i = 0; i < 12; ++i)
-    {
-        osc[i].setFrequency(physics.getFrequency(i));
-    }
+	// GET FREQUENCIES FROM SPRING TUNING
+	for (int i = 0; i < 12; ++i)
+	{
+		osc[i].setFrequency(physics.getFrequency(i));
+	}
+	*/
 }
 
 float SpringTuningAudioProcessor::tick(float sample)
@@ -63,7 +64,8 @@ float SpringTuningAudioProcessor::tick(float sample)
     
     for (int i = 0; i < 12; i++)
     {
-        // if osc is on, tick here, if not dont
+        // set frequencies, then if osc is on, tick here, if not dont
+		//osc[i].setFrequency(physics.getFrequency(i));
 		if (physics.pitchEnabled(i)) sample += osc[i].tick();
     }
     
@@ -106,11 +108,18 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 		{
 			DBG("note on, toggling note");
 			physics.toggleNote(noteNumber);
-			physics.print();
+			//physics.printActiveParticles();
+			physics.printActiveSprings();
 		}
-		else DBG("note off, doing nothing");
 	}
     
+	// Run physics simulation
+	physics.simulate();
+
+	for (int i = 0; i < 12; ++i)
+	{
+		if (physics.pitchEnabled(i)) osc[i].setFrequency(physics.getFrequency(i));
+	}
 }
 
 

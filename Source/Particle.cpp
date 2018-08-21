@@ -11,12 +11,11 @@
 #include "Particle.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Particle::Particle(double xVal, double yVal, double weight, bool startLocked, bool startEnabled):
+Particle::Particle(double xVal, double yVal, bool startLocked, bool startEnabled):
 x(xVal),
 y(yVal),
 prevX(xVal),
 prevY(yVal),
-w(weight),
 locked(startLocked),
 enabled(startEnabled)
 {
@@ -31,11 +30,6 @@ double Particle::getX()
 double Particle::getY()
 {
 	return y;
-}
-
-double Particle::getWeight()
-{
-	return w;
 }
 
 bool Particle::getLocked()
@@ -70,19 +64,18 @@ void Particle::changeLock()
 
 Particle* Particle::copy()
 {
-	return new Particle(x, y, w, locked);
+	return new Particle(x, y, locked, enabled);
 	
 }
 
 bool Particle::compare(Particle* that)
 {
-	return (x == that->getX() && y == that->getY() && w == that->getWeight() && locked == that->getLocked());
+	return (x == that->getX() && y == that->getY() && locked == that->getLocked());
 }
 
 void Particle::print()
 {
 	DBG("Position: (" + String(x) + ", " + String(y) + ")");
-	DBG("Weight: " + String(w));
 	DBG("Locked: " + String(int(locked)));
 	if (enabled) DBG("Currently enabled");
 	else DBG("Currently disabled");

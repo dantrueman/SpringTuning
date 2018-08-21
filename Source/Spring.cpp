@@ -11,12 +11,13 @@
 #include "Spring.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Spring::Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval) :
+Spring::Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index) :
 	a(firstPoint),
 	b(secondPoint),
 	springLength(length),
 	strength(str),
-	baseInterval(interval)
+	baseInterval(interval),
+	intervalIndex(index)
 {
 
 }
@@ -46,9 +47,14 @@ double Spring::getBaseInterval()
 	return baseInterval;
 }
 
+int Spring::getIntervalIndex()
+{
+	return intervalIndex;
+}
+
 Spring Spring::copy()
 {
-	Spring copySpring(a, b, springLength, strength, baseInterval);
+	Spring copySpring(a, b, springLength, strength, baseInterval, intervalIndex);
 	return copySpring;
 }
 
@@ -161,12 +167,17 @@ void Spring::satisfyConstraints(double distance)
 	diffX *= ((currentDist - distance) / currentDist) * 0.5;
 	diffY *= ((currentDist - distance) / currentDist) * 0.5;
 
-	DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
+	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
 	
 	a->addX(diffX);
 	a->addY(diffY);
 	b->subX(diffX);
 	b->subY(diffY);
+
+	diffX = b->getX() - a->getX();
+	diffY = b->getY() - a->getY();
+
+	springLength = sqrt(diffX * diffX + diffY * diffY);
 	
 	/*
 	Aatish's spring function
