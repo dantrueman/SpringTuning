@@ -98,6 +98,16 @@ void Spring::adjustLength(double newLength)
 	springLength = newLength;
 }
 
+bool Spring::isALocked()
+{
+	return a->getLocked();
+}
+
+bool Spring::isBLocked()
+{
+	return b->getLocked();
+}
+
 /*
 String Spring::getStringBaseInterval()
 {
@@ -159,10 +169,16 @@ String Spring::getStringBaseInterval()
 //still needs tweaking
 void Spring::satisfyConstraints(double distance)
 {
+	//DBG("Satisfying constraints for " + String(distance) + " distance \n Printing points:");
+	//a->print();
+	//b->print();
 	double diffX = b->getX() - a->getX();
 	double diffY = b->getY() - a->getY();
 	double currentDist = sqrt(diffX * diffX + diffY * diffY);
 	if (currentDist == 0.0) return;
+
+	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
+	//DBG("CurrentDist = " + String(currentDist));
 	
 	diffX *= ((currentDist - distance) / currentDist) * 0.5;
 	diffY *= ((currentDist - distance) / currentDist) * 0.5;
@@ -174,10 +190,18 @@ void Spring::satisfyConstraints(double distance)
 	b->subX(diffX);
 	b->subY(diffY);
 
+	//DBG("Printing points after modification");
+	a->print();
+	b->print();
+
 	diffX = b->getX() - a->getX();
 	diffY = b->getY() - a->getY();
 
+	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
+
 	springLength = sqrt(diffX * diffX + diffY * diffY);
+
+	//DBG("new SpringLength = " + String(springLength));
 	
 	/*
 	Aatish's spring function

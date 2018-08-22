@@ -56,8 +56,25 @@ void Physics::simulate()
 
 	for (auto spring : springArray)
 	{
-		double interval = tuningArray[spring->getIntervalIndex()];
-		if (spring->getEnabled()) spring->satisfyConstraints(interval);
+		if (spring->getEnabled())
+		{
+			bool a = spring->isALocked();
+			bool b = spring->isBLocked();
+			double distance;
+
+			// if both are locked do not integrate
+			if (!(a && b))
+			{
+				// if neither are locked or just a is locked base the distance off of a
+				if (!b) distance = spring->getA()->getX() * tuningArray[spring->getIntervalIndex()] - spring->getA()->getX();
+				// if b is locked and a is unlocked base the distance off of b
+				else distance = spring->getB()->getX() - spring->getB()->getX() / tuningArray[spring->getIntervalIndex()];
+
+				spring->satisfyConstraints(distance);
+			}
+
+			
+		}
 	}
     
 	//something about distance, integrating particles

@@ -34,6 +34,10 @@ public:
     
     bool getEnabled(void) { return enabled; }
     void setEnabled(bool e) { enabled = e; }
+
+	bool isALocked();
+	bool isBLocked();
+
 private:
 	Particle* a;
 	Particle* b;

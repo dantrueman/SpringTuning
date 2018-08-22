@@ -103,13 +103,13 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
 	{
 		int noteNumber = (m.getNoteNumber() % 12) + 60;
-		DBG("message at " + String(noteNumber));
+		//DBG("message at " + String(noteNumber));
 		if (m.isNoteOn())
 		{
-			DBG("note on, toggling note");
+			//DBG("note on, toggling note");
 			physics.toggleNote(noteNumber);
 			//physics.printActiveParticles();
-			physics.printActiveSprings();
+			//physics.printActiveSprings();
 		}
 	}
     

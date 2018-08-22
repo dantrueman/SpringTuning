@@ -111,6 +111,8 @@ void Particle::integrate()
 {
 	if (!locked)
 	{
+		//DBG("Integrating");
+		//DBG("initial x: " + String(x) + ", initial y: " + String(y));
 		double drag = 1.0; //still need to figure this one out
 		double newX = x - prevX;
 		double newY = y - prevY;
@@ -126,6 +128,7 @@ void Particle::integrate()
 		x = newX;
 		y = newY;
 
+		//DBG("final x: " + String(x) + ", final y: " + String(y));
 	}
 
 	//Aatish's function:
