@@ -153,6 +153,11 @@ void Physics::removeNote(int noteIndex)
 	removeParticle(noteIndex);
 	removeSpringsByNote(noteIndex);
 }
+
+void Physics::removeAllNotes(void)
+{
+    for (int i = 0; i < 12; i++) removeNote(i);
+}
 void Physics::toggleNote(int noteIndex)
 {
 	int convertedIndex = noteIndex % 12; // just in case a midi value is passed accidentally

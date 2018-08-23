@@ -36,6 +36,7 @@ public:
     
 	void addNote(int noteIndex);
 	void removeNote(int noteIndex);
+    void removeAllNotes(void);
 	void toggleNote(int noteIndex);
     
     void toggleTetherForNote(int note);
@@ -45,6 +46,7 @@ public:
 
 	void addSpring(Spring* s);
 	void removeSpring(Spring* s);
+    
 	void addSpringsByNote(int addIndex);
 	void removeSpringsByNote(int removeIndex);
 	void addSpringsByInterval(double interval);

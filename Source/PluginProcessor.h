@@ -58,6 +58,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	void notePressed(int note, bool lock);
+    void clear(void);
     
     Physics physics;
 

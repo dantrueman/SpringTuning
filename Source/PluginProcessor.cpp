@@ -258,4 +258,9 @@ void SpringTuningAudioProcessor::notePressed(int note, bool lock)
 	}
 }
 
+void SpringTuningAudioProcessor::clear(void)
+{
+    physics.removeAllNotes();
+}
+
 

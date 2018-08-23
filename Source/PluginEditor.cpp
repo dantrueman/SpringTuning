@@ -59,13 +59,28 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             float scalex = ((midi - 60.0f) / 12.0f);
             float posx = scalex *  (getWidth() - 2*X_OFFSET);
             
+            float radians = scalex * Utilities::twopi;
+            float radius = 175;
+            float centerx = getWidth() * 0.5f, centery = getHeight() * 0.5f;
+            
+            float cx = centerx + cosf(radians) * radius - 18;
+            float cy = centery + sinf(radians) * radius - 18;
+            
             if (p->getLocked())
             {
-                g.fillEllipse(X_OFFSET + posx - 3, getHeight() * 0.5 - 3, 36, 36);
+                g.setColour (Colours::black);
+                g.fillEllipse(cx, cy, 36, 36);
+                
+                g.setColour (Colours::dimgrey);
+                g.fillEllipse(X_OFFSET + posx - 3, getHeight() * 0.9 - 3, 36, 36);
             }
             else
             {
-                g.drawEllipse(X_OFFSET + posx, getHeight() * 0.5, 30, 30, 6);
+                g.setColour (Colours::black);
+                g.drawEllipse(cx, cy, 30, 30, 6);
+                
+                g.setColour (Colours::dimgrey);
+                g.drawEllipse(X_OFFSET + posx, getHeight() * 0.9, 30, 30, 6);
             }
             
             if (++counter > 100)
@@ -150,6 +165,12 @@ bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
 	int code = e.getKeyCode();
     
     DBG("key pressed: " + String(code));
+    
+    if (code == KeyPress::spaceKey)
+    {
+        processor.clear();
+        return true;
+    }
     
     bool lock = e.getModifiers().isShiftDown();
     int note = getNoteFromKeycode(code);

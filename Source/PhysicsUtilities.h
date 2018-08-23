@@ -21,6 +21,10 @@ public:
     {
         return (69.0f + 12.0f * log2(f * INV_440));
     }
+    
+    constexpr static const float pi = 3.14159265359f;
+    constexpr static const float twopi = 6.28318530718f;
+    
 private:
     Utilities () {};
 };
