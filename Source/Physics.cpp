@@ -9,6 +9,7 @@
 */
 
 #include "Physics.h"
+#include "PhysicsUtilities.h"
 
 using namespace std;
 
@@ -18,17 +19,17 @@ Physics::Physics(void)
     
     particleArray.ensureStorageAllocated(12);
 
-	double xValue = cFreq;
+	double xValue = Utilities::cFreq;
 
 	for (int i = 0; i < 12; i++)
 	{
         Particle* particle = new Particle(xValue, 0.0, 1.0);
         particle->setEnabled(false);
         particleArray.add(particle);
-		xValue *= halfStepRatio;
+		xValue *= Utilities::halfStepRatio;
 	}
 
-	DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
+	//DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
 
     springArray.ensureStorageAllocated(100);
 	for (int i = 0; i < 12; i++)
@@ -39,7 +40,7 @@ Physics::Physics(void)
             Spring* spring = new Spring(particleArray[j],
                                         particleArray[i],
                                         particleArray[i]->getX() - particleArray[j]->getX(),
-                                        defaultStrength, tuningArray[i - j], i - j);
+                                        defaultStrength, Utilities::tunings[0][i - j], i - j);
             spring->setEnabled(false);
             springArray.add(spring);
 		}
@@ -66,9 +67,9 @@ void Physics::simulate()
 			if (!(a && b))
 			{
 				// if neither are locked or just a is locked base the distance off of a
-				if (!b) distance = spring->getA()->getX() * tuningArray[spring->getIntervalIndex()] - spring->getA()->getX();
+				if (!b) distance = spring->getA()->getX() * Utilities::tunings[0][spring->getIntervalIndex()] - spring->getA()->getX();
 				// if b is locked and a is unlocked base the distance off of b
-				else distance = spring->getB()->getX() - spring->getB()->getX() / tuningArray[spring->getIntervalIndex()];
+				else distance = spring->getB()->getX() - spring->getB()->getX() / Utilities::tunings[0][spring->getIntervalIndex()];
 
 				spring->satisfyConstraints(distance);
 			}
@@ -95,37 +96,6 @@ void Physics::simulate()
     satisfyconstraints( constraint[ 0 ], constraint[ 1 ], constraint[ 2 ], constraint[ 3] );
  }
 	*/
-}
-
-double Physics::noteToFreq(String whichNote)
-{
-    int noteIndex = 60;
-	//int noteIndex = Array::indexOf(notesInAnOctave, whichNote); // will eventually need to change
-	return (double)(cFreq * pow(2.0, noteIndex / 12.0)); // will need to change when multiple octaves are added
-}
-
-//need to changec
-double Physics::posToFreq(double position)
-{
-	double noteValue = 60.0 + position;
-	return (double)(cFreq * pow(2.0, noteValue / 12.0)) / 32; // will need to change when multiple octaves are added
-}
-
-int Physics::noteToCents(String whichNote)
-{
-	return (int)(freqToCents(noteToFreq(whichNote)));
-}
-int Physics::freqToCents(double whichFreq)
-{
-	return (int)(ratioToCents(whichFreq / cFreq));
-}
-double Physics::centsToFreq(int centsFromC)
-{
-	return cFreq * pow(2, centsFromC / 1200.0);
-}
-int Physics::ratioToCents(double ratio)
-{
-	return 1200 * log(ratio) / log(2);
 }
 
 void Physics::toggleSpring()
@@ -161,15 +131,15 @@ void Physics::removeAllNotes(void)
 void Physics::toggleNote(int noteIndex)
 {
 	int convertedIndex = noteIndex % 12; // just in case a midi value is passed accidentally
-	DBG("calling " + String(convertedIndex) + " in toggleNote()");
+	//DBG("calling " + String(convertedIndex) + " in toggleNote()");
 	if (particleArray[convertedIndex]->getEnabled())
 	{
-		DBG("Removing " + notesInAnOctave[convertedIndex] + " from list.");
+		//DBG("Removing " + notesInAnOctave[convertedIndex] + " from list.");
 		removeNote(convertedIndex);
 	}
 	else
 	{
-		DBG("Adding " + notesInAnOctave[convertedIndex] + " to list.");
+		//DBG("Adding " + notesInAnOctave[convertedIndex] + " to list.");
 		addNote(convertedIndex);
 	}
 }
@@ -187,7 +157,7 @@ void Physics::toggleTetherForNote(int note)
     else
     {
         p->lock();
-        p->setX(cFreq * tuningArray[note]);
+        p->setX(Utilities::cFreq * Utilities::tunings[0][note]);
         
     }
 }
@@ -298,7 +268,7 @@ void Physics::print()
 		String printStatus = "";
 		if (particleArray[i]->getEnabled()) printStatus = " (enabled)";
 		else printStatus = " (disabled)";
-		DBG(notesInAnOctave[i] + " = " + String(getFrequency(i)) + printStatus);
+		//DBG(notesInAnOctave[i] + " = " + String(getFrequency(i)) + printStatus);
 	}
 }
 
@@ -329,14 +299,4 @@ void Physics::printActiveSprings()
 bool Physics::checkEnabledParticle(int index)
 {
 	return particleArray[index]->getEnabled();
-}
-
-double Physics::halfStepUp(double freq)
-{
-	return freq * halfStepRatio;
-}
-
-double Physics::halfStepDown(double freq)
-{
-	return freq / halfStepRatio;
 }

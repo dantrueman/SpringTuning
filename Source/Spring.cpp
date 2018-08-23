@@ -177,24 +177,24 @@ void Spring::satisfyConstraints(double distance)
 
 	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
 	//DBG("CurrentDist = " + String(currentDist));
-	
+
 	diffX *= ((currentDist - distance) / currentDist) * 0.5;
 	diffY *= ((currentDist - distance) / currentDist) * 0.5;
 
 	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-    //a->setX(a->getX() + diffX);
-	
-    if (!a->getLocked())
-    {
-        a->addX(diffX);
-        a->addY(diffY);
-    }
-    
-    if (!b->getLocked())
-    {
-        b->subX(diffX);
-        b->subY(diffY);
-    }
+	//a->setX(a->getX() + diffX);
+
+	if (!a->getLocked())
+	{
+		a->addX(diffX);
+		a->addY(diffY);
+	}
+
+	if (!b->getLocked())
+	{
+		b->subX(diffX);
+		b->subY(diffY);
+	}
 
 	//DBG("Printing points after modification");
 	//a->print();
@@ -208,7 +208,7 @@ void Spring::satisfyConstraints(double distance)
 	springLength = sqrt(distX * distX + distY * distY);
 
 	//DBG("new SpringLength = " + String(springLength));
-	
+
 	/*
 	Aatish's spring function
 	function satisfyconstraints( p1, p2, distance) {
@@ -220,5 +220,32 @@ void Spring::satisfyConstraints(double distance)
 	p1.position.add( correctionHalf );
 	p2.position.sub( correctionHalf );
 	}
+	*/
+}
+
+void Spring::update()
+{
+	/*
+	Verlet function
+	protected void update(boolean applyConstraints) {
+        Vec2D delta = b.sub(a);
+        // add minute offset to avoid div-by-zero errors
+        float dist = delta.magnitude() + EPS;
+        float normDistStrength = (dist - restLength)
+                / (dist * (a.invWeight + b.invWeight)) * strength;
+        if (!a.isLocked && !isALocked) {
+            a.addSelf(delta.scale(normDistStrength * a.invWeight));
+            if (applyConstraints) {
+                a.applyConstraints();
+            }
+        }
+        if (!b.isLocked && !isBLocked) {
+            b.addSelf(delta.scale(-normDistStrength * b.invWeight));
+            if (applyConstraints) {
+                b.applyConstraints();
+            }
+        }
+    }
+
 	*/
 }

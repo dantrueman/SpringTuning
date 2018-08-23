@@ -31,6 +31,7 @@ public:
 	void adjustLength(double newLength);
 	//String getStringBaseInterval();
 	void satisfyConstraints(double distance);
+	void update();
     
     bool getEnabled(void) { return enabled; }
     void setEnabled(bool e) { enabled = e; }
