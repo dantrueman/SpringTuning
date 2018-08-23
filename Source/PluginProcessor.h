@@ -57,7 +57,7 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	void adjustNoteFromKeycode(int code);
+	void notePressed(int note, bool lock);
 
 private:
     void block(void);

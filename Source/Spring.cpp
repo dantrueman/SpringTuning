@@ -80,12 +80,12 @@ void Spring::print()
 
 void Spring::lockA()
 {
-	a->changeLock();
+	a->toggleLock();
 }
 
 void Spring::lockB()
 {
-	b->changeLock();
+	b->toggleLock();
 }
 
 void Spring::setStrength(double newStrength)

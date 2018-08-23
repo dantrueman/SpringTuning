@@ -173,6 +173,13 @@ void Physics::toggleNote(int noteIndex)
 	}
 }
 
+
+
+void Physics::toggleTetherForNote(int note)
+{
+    particleArray[note]->toggleLock();
+}
+
 //probably not necessary until UI?
 void Physics::updateNotes()
 {

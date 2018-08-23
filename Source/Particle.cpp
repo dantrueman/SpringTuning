@@ -37,19 +37,12 @@ bool Particle::getLocked()
 	return locked;
 }
 
-void Particle::useLock()
-{
-	if (locked)
-	{
-		prevX = x;
-		prevY = y;
-	}
-}
-
 void Particle::lock()
 {
 	locked = true;
-	useLock();
+    
+    prevX = x;
+    prevY = y;
 }
 
 void Particle::unlock()
@@ -57,9 +50,17 @@ void Particle::unlock()
 	locked = false;
 }
 
-void Particle::changeLock()
+void Particle::toggleLock()
 {
-	locked = !locked;
+    if (locked)
+    {
+        unlock();
+    }
+    else
+    {
+        lock();
+    }
+    
 }
 
 Particle* Particle::copy()

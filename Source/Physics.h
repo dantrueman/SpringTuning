@@ -34,6 +34,8 @@ public:
 	void addNote(int noteIndex);
 	void removeNote(int noteIndex);
 	void toggleNote(int noteIndex);
+    
+    void toggleTetherForNote(int note);
 
 	void updateNotes();
 	void updateFreq();

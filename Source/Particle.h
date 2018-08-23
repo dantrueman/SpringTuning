@@ -19,10 +19,9 @@ public:
 	double getX();
 	double getY();
 	bool getLocked();
-	void useLock();
 	void lock();
 	void unlock();
-	void changeLock();
+	void toggleLock();
 	Particle* copy();
 	bool compare(Particle* that);
 	void print();
