@@ -49,38 +49,65 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
     g.setFont (40.0f);
     g.drawFittedText ("Spring Tuning", getLocalBounds(), Justification::centredTop, 1);
     
-    for (int i = 0; i < 12; i++)
+    float midi,scalex,posx,radians,cx,cy;
+    float centerx = getWidth() * 0.5f, centery = getHeight() * 0.5f, radius = 175;
+    
+    for (auto s : processor.physics.getSprings())
     {
-        Particle* p = processor.physics.getParticle(i);
-        
+        if (s->getEnabled())
+        {
+            Particle* a = s->getA();
+            midi = Utilities::ftom(a->getX());
+            scalex = ((midi - 60.0f) / 12.0f);
+            
+            radians = scalex * Utilities::twopi;
+            
+            float cxa = centerx + cosf(radians) * radius;
+            float cya = centery + sinf(radians) * radius;
+            
+            
+            Particle* b = s->getB();
+            midi = Utilities::ftom(b->getX());
+            scalex = ((midi - 60.0f) / 12.0f);
+            
+            radians = scalex * Utilities::twopi;
+            
+            float cxb = centerx + cosf(radians) * radius;
+            float cyb = centery + sinf(radians) * radius;
+            
+            g.setColour(Colours::dimgrey);
+            g.drawLine(cxa, cya, cxb, cyb);
+        }
+    }
+    
+    for (auto p : processor.physics.getParticles())
+    {
         if (p->getEnabled())
         {
-            float midi = Utilities::ftom(p->getX());
-            float scalex = ((midi - 60.0f) / 12.0f);
-            float posx = scalex *  (getWidth() - 2*X_OFFSET);
+            midi = Utilities::ftom(p->getX());
+            scalex = ((midi - 60.0f) / 12.0f);
+            posx = scalex *  (getWidth() - 2*X_OFFSET);
             
-            float radians = scalex * Utilities::twopi;
-            float radius = 175;
-            float centerx = getWidth() * 0.5f, centery = getHeight() * 0.5f;
+            radians = scalex * Utilities::twopi;
             
-            float cx = centerx + cosf(radians) * radius - 18;
-            float cy = centery + sinf(radians) * radius - 18;
+            cx = centerx + cosf(radians) * radius - 18;
+            cy = centery + sinf(radians) * radius - 18;
             
             if (p->getLocked())
             {
                 g.setColour (Colours::black);
                 g.fillEllipse(cx, cy, 36, 36);
                 
-                g.setColour (Colours::dimgrey);
-                g.fillEllipse(X_OFFSET + posx - 3, getHeight() * 0.9 - 3, 36, 36);
+                g.setColour (Colours::black);
+                g.fillEllipse(X_OFFSET + posx, getHeight() * 0.9, 36, 36);
             }
             else
             {
-                g.setColour (Colours::black);
-                g.drawEllipse(cx, cy, 30, 30, 6);
+                g.setColour (Colours::grey);
+                g.fillEllipse(cx, cy, 36, 36);
                 
-                g.setColour (Colours::dimgrey);
-                g.drawEllipse(X_OFFSET + posx, getHeight() * 0.9, 30, 30, 6);
+                g.setColour (Colours::grey);
+                g.fillEllipse(X_OFFSET + posx, getHeight() * 0.9, 36, 36);
             }
             
             if (++counter > 100)
@@ -92,9 +119,6 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             }
         }
     }
-    
-    
-    
 }
 
 void SpringTuningAudioProcessorEditor::resized()

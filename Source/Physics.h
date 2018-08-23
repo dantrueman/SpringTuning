@@ -65,6 +65,9 @@ public:
 
 	double halfStepUp(double freq);
 	double halfStepDown(double freq);
+    
+    OwnedArray<Particle>& getParticles(void) { return particleArray;}
+    OwnedArray<Spring>& getSprings(void) { return springArray;}
 
 private:
 	const String intervalLabels[12] = {"minor second",
