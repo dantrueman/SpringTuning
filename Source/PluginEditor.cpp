@@ -18,6 +18,10 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 300);
+    
+    setWantsKeyboardFocus(true);
+    addKeyListener(this);
+    
 }
 
 SpringTuningAudioProcessorEditor::~SpringTuningAudioProcessorEditor()
@@ -28,11 +32,11 @@ SpringTuningAudioProcessorEditor::~SpringTuningAudioProcessorEditor()
 void SpringTuningAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    g.fillAll (Colours::antiquewhite);
 
-    g.setColour (Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
+    g.setColour (Colours::black);
+    g.setFont (40.0f);
+    g.drawFittedText ("Spring Tuning", getLocalBounds(), Justification::centred, 1);
 }
 
 void SpringTuningAudioProcessorEditor::resized()
@@ -43,9 +47,9 @@ void SpringTuningAudioProcessorEditor::resized()
 
 bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
 {
-	DBG("key has been pressed");
-
 	int code = e.getKeyCode();
+    
+    DBG("key pressed: " + String(code));
 
 	processor.adjustNoteFromKeycode(code);
 
