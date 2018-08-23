@@ -16,8 +16,13 @@ class Particle
 {
 public:
 	Particle(double xVal, double yVal, bool startLocked = true, bool startEnabled = false);
+    
+    void setX(double);
 	double getX();
+    
+    void setY(double);
 	double getY();
+    
 	bool getLocked();
 	void lock();
 	void unlock();

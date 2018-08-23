@@ -80,24 +80,7 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 {
     ScopedNoDenormals noDenormals;
     
-    // Clear left and right channels
-    buffer.clear (0, 0, buffer.getNumSamples());
-    buffer.clear (1, 0, buffer.getNumSamples());
-
-    float sample = 0.0f;
-    
-    auto* left = buffer.getWritePointer (0);
-    auto* right = buffer.getWritePointer (1);
-    
-    for (auto i = 0; i < buffer.getNumSamples(); ++i)
-    {
-        sample = tick((left[i] + right[i]) * 0.5);
-        left[i] = sample;
-        right[i] = left[i];
-    }
-    
-
-	MidiMessage m;
+    MidiMessage m;
 	int time;
 
 	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
@@ -120,6 +103,22 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 	{
 		if (physics.pitchEnabled(i)) osc[i].setFrequency(physics.getFrequency(i));
 	}
+    
+    // Clear left and right channels
+    buffer.clear (0, 0, buffer.getNumSamples());
+    buffer.clear (1, 0, buffer.getNumSamples());
+    
+    float sample = 0.0f;
+    
+    auto* left = buffer.getWritePointer (0);
+    auto* right = buffer.getWritePointer (1);
+    
+    for (auto i = 0; i < buffer.getNumSamples(); ++i)
+    {
+        sample = tick((left[i] + right[i]) * 0.5);
+        left[i] = sample;
+        right[i] = left[i];
+    }
 }
 
 

@@ -17,18 +17,29 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (800, 600);
     
     setWantsKeyboardFocus(true);
     addKeyListener(this);
     
+    startTimerHz(30);
+    
 }
+
+
 
 SpringTuningAudioProcessorEditor::~SpringTuningAudioProcessorEditor()
 {
 }
 
+void SpringTuningAudioProcessorEditor::timerCallback(void)
+{
+    repaint();
+}
+
 //==============================================================================
+#define X_OFFSET 50
+#define SPACING 2.0f
 void SpringTuningAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -36,7 +47,39 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
 
     g.setColour (Colours::black);
     g.setFont (40.0f);
-    g.drawFittedText ("Spring Tuning", getLocalBounds(), Justification::centred, 1);
+    g.drawFittedText ("Spring Tuning", getLocalBounds(), Justification::centredTop, 1);
+    
+    for (int i = 0; i < 12; i++)
+    {
+        Particle* p = processor.physics.getParticle(i);
+        
+        if (p->getEnabled())
+        {
+            float midi = Utilities::ftom(p->getX());
+            float scalex = ((midi - 60.0f) / 12.0f);
+            float posx = scalex *  (getWidth() - 2*X_OFFSET);
+            
+            if (p->getLocked())
+            {
+                g.fillEllipse(X_OFFSET + posx - 3, getHeight() * 0.5 - 3, 36, 36);
+            }
+            else
+            {
+                g.drawEllipse(X_OFFSET + posx, getHeight() * 0.5, 30, 30, 6);
+            }
+            
+            if (++counter > 100)
+            {
+                counter = 0;
+                DBG("midi: " + String(midi));
+                DBG("scalex: " + String(scalex));
+                DBG("posx: " + String(posx));
+            }
+        }
+    }
+    
+    
+    
 }
 
 void SpringTuningAudioProcessorEditor::resized()
@@ -98,6 +141,8 @@ int SpringTuningAudioProcessorEditor::getNoteFromKeycode(int code)
     {
         return 11;
     }
+    
+    return -1;
 }
 
 bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
@@ -109,7 +154,7 @@ bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
     bool lock = e.getModifiers().isShiftDown();
     int note = getNoteFromKeycode(code);
     
-    processor.notePressed(note, lock);
+    if (note >= 0) processor.notePressed(note, lock);
 
 	return true;
 }

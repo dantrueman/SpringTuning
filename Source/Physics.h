@@ -31,6 +31,9 @@ public:
 
 	void addParticle(int noteIndex);
 	void removeParticle(int removeIndex);
+    
+    Particle* getParticle(int note) { return particleArray[note];}
+    
 	void addNote(int noteIndex);
 	void removeNote(int noteIndex);
 	void toggleNote(int noteIndex);

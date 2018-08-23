@@ -22,9 +22,19 @@ enabled(startEnabled)
 
 }
 
+void Particle::setX(double xp)
+{
+    x = xp;
+}
+
 double Particle::getX()
 {
 	return x;
+}
+
+void Particle::setY(double yp)
+{
+    y = yp;
 }
 
 double Particle::getY()
@@ -112,8 +122,6 @@ void Particle::integrate()
 {
 	if (!locked)
 	{
-		//DBG("Integrating");
-		//DBG("initial x: " + String(x) + ", initial y: " + String(y));
 		double drag = 1.0; //still need to figure this one out
 		double newX = x - prevX;
 		double newY = y - prevY;
@@ -128,8 +136,6 @@ void Particle::integrate()
 		prevY = y;
 		x = newX;
 		y = newY;
-
-		//DBG("final x: " + String(x) + ", final y: " + String(y));
 	}
 
 	//Aatish's function:

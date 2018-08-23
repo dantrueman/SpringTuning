@@ -58,14 +58,13 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	void notePressed(int note, bool lock);
+    
+    Physics physics;
 
 private:
     void block(void);
     float tick(float sample);
     stk::BlitSaw osc[12];
-    
-    Physics physics;
-    
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpringTuningAudioProcessor)

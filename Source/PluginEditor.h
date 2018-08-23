@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class SpringTuningAudioProcessorEditor  : public KeyListener, public AudioProcessorEditor
+class SpringTuningAudioProcessorEditor  : public KeyListener, public AudioProcessorEditor, private Timer
 {
 public:
     SpringTuningAudioProcessorEditor (SpringTuningAudioProcessor&);
@@ -33,6 +33,9 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     SpringTuningAudioProcessor& processor;
+    
+    int counter;
+    void timerCallback(void) override;
     
     int getNoteFromKeycode(int keycode);
 

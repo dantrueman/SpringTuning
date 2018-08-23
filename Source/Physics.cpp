@@ -99,7 +99,6 @@ void Physics::simulate()
 
 double Physics::noteToFreq(String whichNote)
 {
-	int lowestNote = 60; //need to check my math
     int noteIndex = 60;
 	//int noteIndex = Array::indexOf(notesInAnOctave, whichNote); // will eventually need to change
 	return (double)(cFreq * pow(2.0, noteIndex / 12.0)); // will need to change when multiple octaves are added
@@ -137,14 +136,11 @@ void Physics::toggleSpring()
 void Physics::addParticle(int index)
 {
     particleArray[index]->setEnabled(true);
-	if (numNotes == 0) particleArray[index]->lock(); // locks the first note, otherwise unlocks
-	else particleArray[index]->unlock();
 	numNotes++;
 }
 void Physics::removeParticle(int index)
 {
     particleArray[index]->setEnabled(false);
-	particleArray[index]->lock(); // automatically locks when turned off
 	numNotes--;
 }
 void Physics::addNote(int noteIndex)
@@ -177,7 +173,18 @@ void Physics::toggleNote(int noteIndex)
 
 void Physics::toggleTetherForNote(int note)
 {
-    particleArray[note]->toggleLock();
+    Particle* p = particleArray[note];
+    
+    if (p->getLocked())
+    {
+        p->unlock();
+    }
+    else
+    {
+        p->lock();
+        p->setX(cFreq * tuningArray[note]);
+        
+    }
 }
 
 //probably not necessary until UI?
