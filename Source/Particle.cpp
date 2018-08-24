@@ -11,15 +11,24 @@
 #include "Particle.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Particle::Particle(double xVal, double yVal, bool startLocked, bool startEnabled):
+Particle::Particle(double xVal, int n):
 x(xVal),
-y(yVal),
+restX(xVal),
 prevX(xVal),
-prevY(yVal),
-locked(startLocked),
-enabled(startEnabled)
+note(n),
+enabled(false)
 {
 
+}
+
+void Particle::setRestX(double xp)
+{
+    restX = xp;
+}
+
+double Particle::getRestX()
+{
+    return restX;
 }
 
 void Particle::setX(double xp)
@@ -32,62 +41,20 @@ double Particle::getX()
 	return x;
 }
 
-void Particle::setY(double yp)
-{
-    y = yp;
-}
-
-double Particle::getY()
-{
-	return y;
-}
-
-bool Particle::getLocked()
-{
-	return locked;
-}
-
-void Particle::lock()
-{
-	locked = true;
-    
-    prevX = x;
-    prevY = y;
-}
-
-void Particle::unlock()
-{
-	locked = false;
-}
-
-void Particle::toggleLock()
-{
-    if (locked)
-    {
-        unlock();
-    }
-    else
-    {
-        lock();
-    }
-    
-}
-
 Particle* Particle::copy()
 {
-	return new Particle(x, y, locked, enabled);
+	return new Particle(x, note);
 	
 }
 
 bool Particle::compare(Particle* that)
 {
-	return (x == that->getX() && y == that->getY() && locked == that->getLocked());
+	return (x == that->getX());
 }
 
 void Particle::print()
 {
-	DBG("Position: (" + String(x) + ", " + String(y) + ")");
-	DBG("Locked: " + String(int(locked)));
+	DBG("Position: " + String(x));
 	if (enabled) DBG("Currently enabled");
 	else DBG("Currently disabled");
 }
@@ -103,40 +70,24 @@ void Particle::addX(double that)
 	x += that;
 }
 
-void Particle::addY(double that)
-{
-	y += that;
-}
-
 void Particle::subX(double that)
 {
 	x -= that;
 }
 
-void Particle::subY(double that)
+void Particle::integrate(double drag)
 {
-	y -= that;
-}
 
-void Particle::integrate()
-{
-	if (!locked)
-	{
-		double drag = 1.0; //still need to figure this one out
-		double newX = x - prevX;
-		double newY = y - prevY;
+    double newX = x - prevX;
 
-		newX *= drag;
-		newY *= drag;
+    newX *= drag;
 
-		newX += x;
-		newY += y;
+    newX += x;
 
-		prevX = x;
-		prevY = y;
-		x = newX;
-		y = newY;
-	}
+    prevX = x;
+    
+    x = newX;
+	
 
 	//Aatish's function:
 	/*

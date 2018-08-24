@@ -25,8 +25,6 @@ public:
 	Spring copy();
 	bool compare(Spring* that);
 	void print();
-	void lockA();
-	void lockB();
 	void setStrength(double newStrength);
 	void adjustLength(double newLength);
 	//String getStringBaseInterval();
@@ -34,9 +32,6 @@ public:
     
     bool getEnabled(void) { return enabled; }
     void setEnabled(bool e) { enabled = e; }
-
-	bool isALocked();
-	bool isBLocked();
 
 private:
 	Particle* a;

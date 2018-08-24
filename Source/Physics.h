@@ -19,6 +19,8 @@ class Physics
 public:
 	Physics();
 	void simulate();
+    
+    float tetherWeight, springWeight;
 
 	double noteToFreq(String whichNote);
 	double posToFreq(double position);
@@ -101,7 +103,11 @@ private:
 		15.0 / 8.0, //major 7th
 		2.0}; //octave
 
-	OwnedArray<Particle> particleArray;
-    OwnedArray<Spring> springArray;
+	OwnedArray<Particle>    particleArray;
+    OwnedArray<Spring>      springArray;
+    
+    OwnedArray<Particle>    tetherParticleArray;
+    OwnedArray<Spring>      tetherSpringArray;
+    
 	int numNotes; // number of enabled notes
 };

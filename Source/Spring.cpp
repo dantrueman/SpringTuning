@@ -78,16 +78,6 @@ void Spring::print()
 	DBG("Base Interval: " + String(baseInterval));
 }
 
-void Spring::lockA()
-{
-	a->toggleLock();
-}
-
-void Spring::lockB()
-{
-	b->toggleLock();
-}
-
 void Spring::setStrength(double newStrength)
 {
 	strength = newStrength;
@@ -96,16 +86,6 @@ void Spring::setStrength(double newStrength)
 void Spring::adjustLength(double newLength)
 {
 	springLength = newLength;
-}
-
-bool Spring::isALocked()
-{
-	return a->getLocked();
-}
-
-bool Spring::isBLocked()
-{
-	return b->getLocked();
 }
 
 /*
@@ -170,45 +150,30 @@ String Spring::getStringBaseInterval()
 void Spring::satisfyConstraints(double distance)
 {
 	//DBG("Satisfying constraints for " + String(distance) + " distance \n Printing points:");
-	double diffX = b->getX() - a->getX();
-	double diffY = b->getY() - a->getY();
-	double currentDist = sqrt(diffX * diffX + diffY * diffY);
-	if (currentDist == 0.0) return;
+	double diff = b->getX() - a->getX();
 
-	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-	//DBG("CurrentDist = " + String(currentDist));
-	
-	diffX *= ((currentDist - distance) / currentDist) * 0.5;
-	diffY *= ((currentDist - distance) / currentDist) * 0.5;
+	if (diff == 0.0) return;
 
-	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-    //a->setX(a->getX() + diffX);
-	
-    if (!a->getLocked())
-    {
-        a->addX(diffX);
-        a->addY(diffY);
-    }
+	diff *= ((diff - distance) / diff) * strength;
     
-    if (!b->getLocked())
+    if (a->getNote() > 0)
     {
-        b->subX(diffX);
-        b->subY(diffY);
+        a->addX(diff);
+        a->integrate(1.0);
     }
 
-	//DBG("Printing points after modification");
-	//a->print();
-	//b->print();
+    if (b->getNote() > 0)
+    {
+        b->subX(diff);
+        b->integrate(1.0);
+    }
 
-	double distX = b->getX() - a->getX();
-	double distY = b->getY() - a->getY();
+	//double dist = b->getX() - a->getX();
 
-	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-
-	springLength = sqrt(distX * distX + distY * distY);
-
-	//DBG("new SpringLength = " + String(springLength));
+    //springLength = dist;
 	
+    
+    
 	/*
 	Aatish's spring function
 	function satisfyconstraints( p1, p2, distance) {

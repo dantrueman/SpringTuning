@@ -18,17 +18,26 @@ Physics::Physics(void)
     
     particleArray.ensureStorageAllocated(12);
 
-	double xValue = cFreq;
+	//double xValue = cFreq;
 
 	for (int i = 0; i < 12; i++)
 	{
-        Particle* particle = new Particle(xValue, 0.0, 1.0);
-        particle->setEnabled(false);
-        particleArray.add(particle);
-		xValue *= halfStepRatio;
+        // Active particle
+        Particle* p1 = new Particle(cFreq * tuningArray[i], i);
+        p1->setEnabled(false);
+        particleArray.add(p1);
+        
+        // Tether particle
+        Particle* p2 = new Particle(cFreq * tuningArray[i], i);
+        p2->setEnabled(false);
+        tetherParticleArray.add(p2);
+        
+        Spring* s = new Spring(p2, p1, 0.0, (i == 0 ? 1.0 : defaultStrength), 1.0, 0);
+        s->setEnabled(false);
+        tetherSpringArray.add(s);
 	}
 
-	DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
+	//DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
 
     springArray.ensureStorageAllocated(100);
 	for (int i = 0; i < 12; i++)
@@ -47,33 +56,40 @@ Physics::Physics(void)
 
 	numNotes = 0;
 };
+
 void Physics::simulate()
 {
+    /*
     for (auto particle : particleArray)
     {
-		if (particle->getEnabled()) particle->integrate();
+		if (particle->getNote() > 0 && particle->getEnabled())
+        {
+            particle->integrate(tetherWeight);
+        }
 	}
+    */
+    
+    for (auto spring : tetherSpringArray)
+    {
+        if (spring->getEnabled())
+        {
+            //double distance = spring->getA()->getX() - spring->getB()->getX();
+            
+            spring->setStrength(tetherWeight);
+            
+            spring->satisfyConstraints(0.0);
+        }
+    }
 
 	for (auto spring : springArray)
 	{
 		if (spring->getEnabled())
 		{
-			bool a = spring->isALocked();
-			bool b = spring->isBLocked();
-			double distance;
+            double distance = spring->getA()->getX() * (tuningArray[spring->getIntervalIndex()]) - spring->getA()->getX();
+            
+            spring->setStrength(springWeight);
 
-			// if both are locked do not integrate
-			if (!(a && b))
-			{
-				// if neither are locked or just a is locked base the distance off of a
-				if (!b) distance = spring->getA()->getX() * tuningArray[spring->getIntervalIndex()] - spring->getA()->getX();
-				// if b is locked and a is unlocked base the distance off of b
-				else distance = spring->getB()->getX() - spring->getB()->getX() / tuningArray[spring->getIntervalIndex()];
-
-				spring->satisfyConstraints(distance);
-			}
-
-			
+            spring->satisfyConstraints(distance);
 		}
 	}
     
@@ -180,16 +196,8 @@ void Physics::toggleTetherForNote(int note)
 {
     Particle* p = particleArray[note];
     
-    if (p->getLocked())
-    {
-        p->unlock();
-    }
-    else
-    {
-        p->lock();
-        p->setX(cFreq * tuningArray[note]);
-        
-    }
+    // used to lock / unlock and set this on lock
+    p->setX(cFreq * tuningArray[note]);
 }
 
 //probably not necessary until UI?

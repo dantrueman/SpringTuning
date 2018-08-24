@@ -15,36 +15,38 @@
 class Particle
 {
 public:
-	Particle(double xVal, double yVal, bool startLocked = true, bool startEnabled = false);
+	Particle(double xVal, int note);
+    
+    void setRestX(double);
+    double getRestX();
+    
     
     void setX(double);
 	double getX();
     
-    void setY(double);
-	double getY();
-    
-	bool getLocked();
-	void lock();
-	void unlock();
-	void toggleLock();
+
 	Particle* copy();
 	bool compare(Particle* that);
 	void print();
 	void addX(double that);
-	void addY(double that);
 	void subX(double that);
-	void subY(double that);
-	void integrate();
+	void integrate(double drag);
     
     bool getEnabled(void)   { return enabled; }
     void setEnabled(bool e) { enabled = e; }
 
 	void confirmEnabled();
+    
+    void setNote(int newNote) { note = newNote;}
+    int getNote(void){return note;}
+    
+    bool getLocked(void) {return locked;}
+    void setLocked(bool lock) { locked = lock;}
 private:
 	double x;
-	double y;
+    double restX;
 	double prevX;
-	double prevY;
-	bool locked;
     bool enabled;
+    bool locked;
+    int note;
 };

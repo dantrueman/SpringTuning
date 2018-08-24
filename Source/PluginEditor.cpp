@@ -22,14 +22,41 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
     setWantsKeyboardFocus(true);
     addKeyListener(this);
     
-    startTimerHz(30);
+    addAndMakeVisible(springWeightSlider);
+    springWeightSlider.addListener(this);
+    springWeightSlider.setSliderStyle(Slider::SliderStyle::LinearBar);
+    springWeightSlider.setName("Spring Weight");
+    springWeightSlider.setRange(0.0, 1.0);
     
+    addAndMakeVisible(tetherWeightSlider);
+    tetherWeightSlider.addListener(this);
+    tetherWeightSlider.setSliderStyle(Slider::SliderStyle::LinearBar);
+    tetherWeightSlider.setName("Tether Weight");
+    tetherWeightSlider.setRange(0.0, 1.0);
+    
+    startTimerHz(30);
 }
-
 
 
 SpringTuningAudioProcessorEditor::~SpringTuningAudioProcessorEditor()
 {
+}
+
+
+void SpringTuningAudioProcessorEditor::sliderValueChanged (Slider* slider)
+{
+    double value = slider->getValue();
+    
+    if (slider == &tetherWeightSlider)
+    {
+        processor.physics.tetherWeight = value;
+    }
+    else if (slider == &springWeightSlider)
+    {
+        processor.physics.springWeight = value;
+        
+        
+    }
 }
 
 void SpringTuningAudioProcessorEditor::timerCallback(void)
@@ -38,8 +65,6 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
 }
 
 //==============================================================================
-#define X_OFFSET 50
-#define SPACING 2.0f
 void SpringTuningAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -50,7 +75,9 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText ("Spring Tuning", getLocalBounds(), Justification::centredTop, 1);
     
     float midi,scalex,posx,radians,cx,cy;
-    float centerx = getWidth() * 0.5f, centery = getHeight() * 0.5f, radius = 175;
+    float centerx = getWidth() * 0.5f, centery = getHeight() * 0.5f, radius = jmin(getHeight() * 0.25, getWidth() * 0.25);
+    float dimc = jmin(getHeight() * 0.05, getWidth() * 0.05);
+    int x_offset = 0.075 * getWidth();
     
     for (auto s : processor.physics.getSprings())
     {
@@ -60,7 +87,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             midi = Utilities::ftom(a->getX());
             scalex = ((midi - 60.0f) / 12.0f);
             
-            radians = scalex * Utilities::twopi;
+            radians = scalex * Utilities::twopi - Utilities::pi * 0.5;
             
             float cxa = centerx + cosf(radians) * radius;
             float cya = centery + sinf(radians) * radius;
@@ -70,7 +97,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             midi = Utilities::ftom(b->getX());
             scalex = ((midi - 60.0f) / 12.0f);
             
-            radians = scalex * Utilities::twopi;
+            radians = scalex * Utilities::twopi - Utilities::pi * 0.5;
             
             float cxb = centerx + cosf(radians) * radius;
             float cyb = centery + sinf(radians) * radius;
@@ -84,32 +111,35 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
     {
         if (p->getEnabled())
         {
+            // DRAW REST PARTICLE
+            midi = Utilities::ftom(p->getRestX());
+            scalex = ((midi - 60.0f) / 12.0f);
+            posx = scalex *  (getWidth() - 2*x_offset);
+            
+            radians = scalex * Utilities::twopi - Utilities::pi * 0.5;
+            
+            cx = centerx + cosf(radians) * radius - dimc * 0.5f;
+            cy = centery + sinf(radians) * radius - dimc * 0.5f;
+            
+            g.setColour (Colours::grey);
+            g.fillEllipse(cx, cy, dimc, dimc);
+            
+            // DRAW PARTICLE IN MOTION
             midi = Utilities::ftom(p->getX());
             scalex = ((midi - 60.0f) / 12.0f);
-            posx = scalex *  (getWidth() - 2*X_OFFSET);
+            posx = scalex *  (getWidth() - 2*x_offset);
             
-            radians = scalex * Utilities::twopi;
+            radians = scalex * Utilities::twopi - Utilities::pi * 0.5;
             
-            cx = centerx + cosf(radians) * radius - 18;
-            cy = centery + sinf(radians) * radius - 18;
+            cx = centerx + cosf(radians) * radius - dimc * 0.5f;
+            cy = centery + sinf(radians) * radius - dimc * 0.5f;
             
-            if (p->getLocked())
-            {
-                g.setColour (Colours::black);
-                g.fillEllipse(cx, cy, 36, 36);
-                
-                g.setColour (Colours::black);
-                g.fillEllipse(X_OFFSET + posx, getHeight() * 0.9, 36, 36);
-            }
-            else
-            {
-                g.setColour (Colours::grey);
-                g.fillEllipse(cx, cy, 36, 36);
-                
-                g.setColour (Colours::grey);
-                g.fillEllipse(X_OFFSET + posx, getHeight() * 0.9, 36, 36);
-            }
+            g.setColour (Colours::black);
+            g.fillEllipse(cx, cy, dimc, dimc);
             
+            g.setColour (Colours::black);
+            g.fillEllipse(x_offset + posx, getHeight() * 0.9, dimc, dimc);
+   
             if (++counter > 100)
             {
                 counter = 0;
@@ -123,8 +153,8 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
 
 void SpringTuningAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    tetherWeightSlider.setBounds(10, 50, 200, 50);
+    springWeightSlider.setBounds(10, 105, 200, 50);
 }
 
 int SpringTuningAudioProcessorEditor::getNoteFromKeycode(int code)
@@ -195,11 +225,10 @@ bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
         processor.clear();
         return true;
     }
-    
-    bool lock = e.getModifiers().isShiftDown();
+
     int note = getNoteFromKeycode(code);
     
-    if (note >= 0) processor.notePressed(note, lock);
+    if (note >= 0) processor.notePressed(note);
 
 	return true;
 }

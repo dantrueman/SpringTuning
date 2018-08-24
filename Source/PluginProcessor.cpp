@@ -42,22 +42,6 @@ void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     }
 }
 
-// Get data from Spring tuning model and set frequencies / amplitudes of osc
-void SpringTuningAudioProcessor::block(void)
-{
-    //moved to tick for now
-	/*
-	// Run physics simulation
-	physics.simulate();
-
-	// GET FREQUENCIES FROM SPRING TUNING
-	for (int i = 0; i < 12; ++i)
-	{
-		osc[i].setFrequency(physics.getFrequency(i));
-	}
-	*/
-}
-
 float SpringTuningAudioProcessor::tick(float sample)
 {
     sample = 0.0f;
@@ -89,10 +73,7 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 		//DBG("message at " + String(noteNumber));
 		if (m.isNoteOn())
 		{
-			//DBG("note on, toggling note");
 			physics.toggleNote(noteNumber);
-			//physics.printActiveParticles();
-			//physics.printActiveSprings();
 		}
 	}
     
@@ -246,16 +227,18 @@ void SpringTuningAudioProcessor::changeProgramName (int index, const String& new
 {
 }
 
-void SpringTuningAudioProcessor::notePressed(int note, bool lock)
+void SpringTuningAudioProcessor::notePressed(int note)
 {
+    /*
     if (lock)
     {
-        physics.toggleTetherForNote(note);
+        //physics.toggleTetherForNote(note);
     }
     else
-    {
-		physics.toggleNote(note);
-	}
+     */
+    
+    physics.toggleNote(note);
+	
 }
 
 void SpringTuningAudioProcessor::clear(void)

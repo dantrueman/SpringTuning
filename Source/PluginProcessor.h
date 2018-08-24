@@ -57,13 +57,12 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	void notePressed(int note, bool lock);
+	void notePressed(int note);
     void clear(void);
     
     Physics physics;
 
 private:
-    void block(void);
     float tick(float sample);
     stk::BlitSaw osc[12];
     
