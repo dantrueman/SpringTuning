@@ -68,6 +68,9 @@ public:
 	double halfStepUp(double freq);
 	double halfStepDown(double freq);
     
+    OwnedArray<Particle>& getTetherParticles(void) { return tetherParticleArray;}
+    OwnedArray<Spring>& getTetherSprings(void) { return tetherSpringArray;}
+    
     OwnedArray<Particle>& getParticles(void) { return particleArray;}
     OwnedArray<Spring>& getSprings(void) { return springArray;}
 
@@ -89,6 +92,7 @@ private:
 	const int octaves[1] = { 4 }; //will return to when adding more octaves
 	const double cFreq = 261.6255653;
 	const double halfStepRatio = 1.0595;
+    /*
 	const double tuningArray[13] = {1.0, //unison
 		25.0 / 24.0,  //minor 2nd
 		9.0 / 8.0, //major 2nd
@@ -102,6 +106,9 @@ private:
 		9.0 / 5.0, //minor 7th
 		15.0 / 8.0, //major 7th
 		2.0}; //octave
+     */
+    
+    const double tuningArray[13] = {1.0,  1.0595, 1.1125, 1.1893, 1.2601, 1.3351, 1.4144, 1.4986, 1.5877, 1.6822, 1.7823, 1.8883, 2.0 };
 
 	OwnedArray<Particle>    particleArray;
     OwnedArray<Spring>      springArray;

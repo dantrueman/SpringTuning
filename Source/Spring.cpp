@@ -156,24 +156,20 @@ void Spring::satisfyConstraints(double distance)
 
 	diff *= ((diff - distance) / diff) * strength;
     
-    if (a->getNote() > 0)
+    if (!a->getLocked() && (a->getNote() > 0))
     {
         a->addX(diff);
-        a->integrate(1.0);
     }
 
-    if (b->getNote() > 0)
+    if (!b->getLocked() && (b->getNote() > 0))
     {
         b->subX(diff);
-        b->integrate(1.0);
     }
 
 	//double dist = b->getX() - a->getX();
 
     //springLength = dist;
 	
-    
-    
 	/*
 	Aatish's spring function
 	function satisfyconstraints( p1, p2, distance) {

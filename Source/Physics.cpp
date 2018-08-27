@@ -30,9 +30,10 @@ Physics::Physics(void)
         // Tether particle
         Particle* p2 = new Particle(cFreq * tuningArray[i], i);
         p2->setEnabled(false);
+        p2->setLocked(true);
         tetherParticleArray.add(p2);
         
-        Spring* s = new Spring(p2, p1, 0.0, (i == 0 ? 1.0 : defaultStrength), 1.0, 0);
+        Spring* s = new Spring(p1, p2, 0.0, (i == 0 ? 1.0 : defaultStrength), 1.0, 0);
         s->setEnabled(false);
         tetherSpringArray.add(s);
 	}
@@ -57,27 +58,29 @@ Physics::Physics(void)
 	numNotes = 0;
 };
 
+#define DRAG 1.0f
 void Physics::simulate()
 {
-    /*
+
     for (auto particle : particleArray)
     {
 		if (particle->getNote() > 0 && particle->getEnabled())
         {
-            particle->integrate(tetherWeight);
+            particle->integrate(DRAG);
         }
 	}
-    */
     
     for (auto spring : tetherSpringArray)
     {
         if (spring->getEnabled())
         {
-            //double distance = spring->getA()->getX() - spring->getB()->getX();
+            double distance = spring->getA()->getX() - spring->getB()->getX();
+            
+            DBG("dist: " + String(distance));
             
             spring->setStrength(tetherWeight);
             
-            spring->satisfyConstraints(0.0);
+            spring->satisfyConstraints(distance);
         }
     }
 
@@ -152,11 +155,13 @@ void Physics::toggleSpring()
 void Physics::addParticle(int index)
 {
     particleArray[index]->setEnabled(true);
+    tetherParticleArray[index]->setEnabled(true);
 	numNotes++;
 }
 void Physics::removeParticle(int index)
 {
     particleArray[index]->setEnabled(false);
+    tetherParticleArray[index]->setEnabled(false);
 	numNotes--;
 }
 void Physics::addNote(int noteIndex)
@@ -177,15 +182,12 @@ void Physics::removeAllNotes(void)
 void Physics::toggleNote(int noteIndex)
 {
 	int convertedIndex = noteIndex % 12; // just in case a midi value is passed accidentally
-	DBG("calling " + String(convertedIndex) + " in toggleNote()");
 	if (particleArray[convertedIndex]->getEnabled())
 	{
-		DBG("Removing " + notesInAnOctave[convertedIndex] + " from list.");
 		removeNote(convertedIndex);
 	}
 	else
 	{
-		DBG("Adding " + notesInAnOctave[convertedIndex] + " to list.");
 		addNote(convertedIndex);
 	}
 }
@@ -227,22 +229,24 @@ void Physics::addSpringsByNote(int addIndex)
     Particle* p = particleArray[addIndex];
     for (auto spring : springArray)
     {
-        Particle* particleA = spring->getA();
-        Particle* particleB = spring->getB();
+        Particle* a = spring->getA();
+        Particle* b = spring->getB();
         
 		if (!spring->getEnabled())
         {
 			// sets the spring to enabled if one spring matches the index and the other is enabled
-			if (particleA->compare(p))
+			if (a->getNote() == p->getNote())
 			{
-				if (particleB->getEnabled()) spring->setEnabled(true);
+				if (b->getEnabled()) spring->setEnabled(true);
 			}
-			else if (particleB->compare(p))
+			else if (b->getNote() == p->getNote())
 			{
-				if (particleA->getEnabled()) spring->setEnabled(true);
+				if (a->getEnabled()) spring->setEnabled(true);
 			}
         }
 	}
+    
+    tetherSpringArray[addIndex]->setEnabled(true);
 }
 void Physics::removeSpringsByNote(int removeIndex)
 {
@@ -257,6 +261,8 @@ void Physics::removeSpringsByNote(int removeIndex)
             spring->setEnabled(false);
         }
 	}
+    
+    tetherSpringArray[removeIndex]->setEnabled(false);
 }
 void Physics::addSpringsByInterval(double interval)
 {

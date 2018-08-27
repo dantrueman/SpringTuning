@@ -107,7 +107,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
         }
     }
     
-    for (auto p : processor.physics.getParticles())
+    for (auto p : processor.physics.getTetherParticles())
     {
         if (p->getEnabled())
         {
@@ -123,7 +123,13 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             
             g.setColour (Colours::grey);
             g.fillEllipse(cx, cy, dimc, dimc);
-            
+        }
+    }
+    
+    for (auto p : processor.physics.getParticles())
+    {
+        if (p->getEnabled())
+        {
             // DRAW PARTICLE IN MOTION
             midi = Utilities::ftom(p->getX());
             scalex = ((midi - 60.0f) / 12.0f);

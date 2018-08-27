@@ -22,6 +22,30 @@ public:
         return (69.0f + 12.0f * log2(f * INV_440));
     }
     
+    static float   OOPS_clip(float min, float val, float max)
+    {
+        
+        if (val < min) {
+            return min;
+        } else if (val > max) {
+            return max;
+        } else {
+            return val;
+        }
+    }
+    
+    static double   OOPS_clip(double min, double val, double max)
+    {
+        
+        if (val < min) {
+            return min;
+        } else if (val > max) {
+            return max;
+        } else {
+            return val;
+        }
+    }
+    
     constexpr static const float pi = 3.14159265359f;
     constexpr static const float twopi = 6.28318530718f;
     
