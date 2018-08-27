@@ -12,9 +12,13 @@
 
 #include "PhysicsUtilities.h"
 
-class Particle
+class Particle : public ReferenceCountedObject
 {
 public:
+    
+    typedef ReferenceCountedObjectPtr<Particle> Ptr;
+    typedef Array<Particle::Ptr> PtrArr;
+    
 	Particle(double xVal, int note);
     
     void setRestX(double);
@@ -42,6 +46,9 @@ public:
     
     bool getLocked(void) {return locked;}
     void setLocked(bool lock) { locked = lock;}
+    
+    void setName(String s) { name = s;}
+    String getName(void) { return name;}
 private:
 	double x;
     double restX;
@@ -49,4 +56,5 @@ private:
     bool enabled;
     bool locked;
     int note;
+    String name;
 };

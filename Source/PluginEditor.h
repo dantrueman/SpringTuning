@@ -42,10 +42,14 @@ private:
     
     int getNoteFromKeycode(int keycode);
     
-    OwnedArray<Slider> springWeights;
-    OwnedArray<Slider> tetherWeights;
-    Slider springWeightSlider;
-    Slider tetherWeightSlider;
+    OwnedArray<Slider> springSliders;
+    OwnedArray<Slider> tetherSliders;
+    OwnedArray<Label>  springLabels;
+    OwnedArray<Label>  tetherLabels;
+    
+    int springIndices[12];
+    int tetherIndices[12];
+    
     
     void sliderValueChanged (Slider* slider) override;
 

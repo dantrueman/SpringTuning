@@ -87,6 +87,8 @@ void Particle::integrate(double drag)
     prevX = x;
     
     x = newX;
+    
+    if (x < 0.0) x = 0.0;
 	
 
 	//Aatish's function:

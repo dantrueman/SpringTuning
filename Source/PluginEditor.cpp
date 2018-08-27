@@ -22,17 +22,30 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
     setWantsKeyboardFocus(true);
     addKeyListener(this);
     
-    addAndMakeVisible(springWeightSlider);
-    springWeightSlider.addListener(this);
-    springWeightSlider.setSliderStyle(Slider::SliderStyle::LinearBar);
-    springWeightSlider.setName("Spring Weight");
-    springWeightSlider.setRange(0.0, 1.0);
+    for (int i = 0; i < 12; i++)
+    {
+        Spring* spring = processor.physics.getTetherSprings().getUnchecked(i);
+        Slider* s = new Slider("t" + String(i));
     
-    addAndMakeVisible(tetherWeightSlider);
-    tetherWeightSlider.addListener(this);
-    tetherWeightSlider.setSliderStyle(Slider::SliderStyle::LinearBar);
-    tetherWeightSlider.setName("Tether Weight");
-    tetherWeightSlider.setRange(0.0, 1.0);
+        s->addListener(this);
+        s->setSliderStyle(Slider::SliderStyle::LinearBar);
+        s->setRange(0.0, 1.0);
+        s->setValue(spring->getStrength(), dontSendNotification);
+        
+        tetherSliders.add(s);
+        
+        spring = processor.physics.getSprings().getUnchecked(i);
+        s = new Slider("s" + String(i));
+        
+        s->addListener(this);
+        s->setSliderStyle(Slider::SliderStyle::LinearBar);
+        s->setRange(0.0, 1.0);
+        s->setValue(spring->getStrength(), dontSendNotification);
+        
+        springSliders.add(s);
+    }
+    
+    
     
     startTimerHz(30);
 }
@@ -47,21 +60,64 @@ void SpringTuningAudioProcessorEditor::sliderValueChanged (Slider* slider)
 {
     double value = slider->getValue();
     
-    if (slider == &tetherWeightSlider)
+    String name = slider->getName();
+    
+    for (int i = 0; i < 12; i++)
     {
-        processor.physics.tetherWeight = value;
+        if (name == ("t"+String(i)))
+        {
+            processor.physics.setTetherSpringWeight(i, value);
+            break;
+        }
+        else if (name == ("s"+String(i)))
+        {
+            processor.physics.setSpringWeight(i, value);
+            break;
+        }
     }
-    else if (slider == &springWeightSlider)
-    {
-        processor.physics.springWeight = value;
-        
-        
-    }
+    
+
 }
+
 
 void SpringTuningAudioProcessorEditor::timerCallback(void)
 {
+    const int x_offset = 10;
+    const int y_offset = 75;
+    const int w = 150;
+    const int h = 25;
+    const int yspacing = 5;
+    const int xspacing = 5;
+    
     repaint();
+    
+    int sx = 0, tx = 0;
+    for (int i = 0; i < 12; i++)
+    {
+        Spring* s = processor.physics.getTetherSprings().getUnchecked(i);
+        if (s->getEnabled())
+        {
+            addAndMakeVisible(tetherSliders[i]);
+            tetherSliders[i]->setBounds(x_offset, y_offset + (h + yspacing) * tx++, w, h);
+        }
+        else
+        {
+            removeChildComponent(tetherSliders[i]);
+        }
+        
+        s = processor.physics.getSprings().getUnchecked(i);
+        if (s->getEnabled())
+        {
+            addAndMakeVisible(springSliders[i]);
+            springSliders[i]->setBounds(x_offset + w + xspacing, y_offset + (h + yspacing) * sx++, w, h);
+        }
+        else
+        {
+            removeChildComponent(springSliders[i]);
+        }
+        
+        DBG("strength" +String(i) + " = " + String(s->getStrength()));
+    }
 }
 
 //==============================================================================
@@ -74,8 +130,14 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
     g.setFont (40.0f);
     g.drawFittedText ("Spring Tuning", getLocalBounds(), Justification::centredTop, 1);
     
+    g.setFont(20.0f);
+    g.drawFittedText("Tethers", 10, 50, 150, 40, Justification::centredTop, 1);
+    g.drawFittedText("Springs", 170, 50, 150, 40, Justification::centredTop, 1);
+    
+    g.setFont(12.0f);
+    
     float midi,scalex,posx,radians,cx,cy;
-    float centerx = getWidth() * 0.5f, centery = getHeight() * 0.5f, radius = jmin(getHeight() * 0.25, getWidth() * 0.25);
+    float centerx = getWidth() * 0.65f, centery = getHeight() * 0.5f, radius = jmin(getHeight() * 0.25, getWidth() * 0.25);
     float dimc = jmin(getHeight() * 0.05, getWidth() * 0.05);
     int x_offset = 0.075 * getWidth();
     
@@ -92,7 +154,6 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             float cxa = centerx + cosf(radians) * radius;
             float cya = centery + sinf(radians) * radius;
             
-            
             Particle* b = s->getB();
             midi = Utilities::ftom(b->getX());
             scalex = ((midi - 60.0f) / 12.0f);
@@ -105,6 +166,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             g.setColour(Colours::dimgrey);
             g.drawLine(cxa, cya, cxb, cyb);
         }
+
     }
     
     for (auto p : processor.physics.getTetherParticles())
@@ -131,7 +193,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
         if (p->getEnabled())
         {
             // DRAW PARTICLE IN MOTION
-            midi = Utilities::ftom(p->getX());
+            midi = Utilities::clip(0, Utilities::ftom(p->getX()), 128);
             scalex = ((midi - 60.0f) / 12.0f);
             posx = scalex *  (getWidth() - 2*x_offset);
             
@@ -145,22 +207,13 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             
             g.setColour (Colours::black);
             g.fillEllipse(x_offset + posx, getHeight() * 0.9, dimc, dimc);
-   
-            if (++counter > 100)
-            {
-                counter = 0;
-                DBG("midi: " + String(midi));
-                DBG("scalex: " + String(scalex));
-                DBG("posx: " + String(posx));
-            }
         }
     }
 }
 
 void SpringTuningAudioProcessorEditor::resized()
 {
-    tetherWeightSlider.setBounds(10, 50, 200, 50);
-    springWeightSlider.setBounds(10, 105, 200, 50);
+    
 }
 
 int SpringTuningAudioProcessorEditor::getNoteFromKeycode(int code)

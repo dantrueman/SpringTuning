@@ -12,6 +12,17 @@
 
 using namespace std;
 
+
+void Physics::setSpringWeight(int which, double weight)
+{
+    springArray[which]->setStrength(weight);
+}
+
+void Physics::setTetherSpringWeight(int which, double weight)
+{
+    tetherSpringArray[which]->setStrength(weight);
+}
+
 Physics::Physics(void)
 {
 	double defaultStrength = 0.2;
@@ -35,7 +46,9 @@ Physics::Physics(void)
         
         Spring* s = new Spring(p1, p2, 0.0, (i == 0 ? 1.0 : defaultStrength), 1.0, 0);
         s->setEnabled(false);
+        s->setName(notesInAnOctave[i]);
         tetherSpringArray.add(s);
+        
 	}
 
 	//DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
@@ -51,6 +64,7 @@ Physics::Physics(void)
                                         particleArray[i]->getX() - particleArray[j]->getX(),
                                         defaultStrength, tuningArray[i - j], i - j);
             spring->setEnabled(false);
+            spring->setName(intervalLabels[i-j]);
             springArray.add(spring);
 		}
 	}
@@ -76,10 +90,6 @@ void Physics::simulate()
         {
             double distance = spring->getA()->getX() - spring->getB()->getX();
             
-            DBG("dist: " + String(distance));
-            
-            spring->setStrength(tetherWeight);
-            
             spring->satisfyConstraints(distance);
         }
     }
@@ -90,8 +100,6 @@ void Physics::simulate()
 		{
             double distance = spring->getA()->getX() * (tuningArray[spring->getIntervalIndex()]) - spring->getA()->getX();
             
-            spring->setStrength(springWeight);
-
             spring->satisfyConstraints(distance);
 		}
 	}

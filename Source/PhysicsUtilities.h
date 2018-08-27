@@ -17,12 +17,20 @@
 class Utilities
 {
 public:
-    static float ftom(float f)
+    static double ftom(double f)
     {
+        if (f < 0.0) f = 0.0;
         return (69.0f + 12.0f * log2(f * INV_440));
     }
     
-    static float   OOPS_clip(float min, float val, float max)
+    static float ftom(float f)
+    {
+        if (f < 0.0) f = 0.0;
+        return (69.0f + 12.0f * log2(f * INV_440));
+    }
+    
+    
+    static double   clip(double min, double val, double max)
     {
         
         if (val < min) {
@@ -33,8 +41,9 @@ public:
             return val;
         }
     }
+
     
-    static double   OOPS_clip(double min, double val, double max)
+    static float   clip(float min, float val, float max)
     {
         
         if (val < min) {
@@ -48,6 +57,8 @@ public:
     
     constexpr static const float pi = 3.14159265359f;
     constexpr static const float twopi = 6.28318530718f;
+    
+    
     
 private:
     Utilities () {};

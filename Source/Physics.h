@@ -14,7 +14,7 @@
 #include "Particle.h"
 #include "Spring.h"
 
-class Physics
+class Physics : public ReferenceCountedObject
 {
 public:
 	Physics();
@@ -54,6 +54,9 @@ public:
 	void addSpringsByInterval(double interval);
 	void removeSpringsByInterval(double interval);
 	void adjustSpringsByInterval(double interval, double stiffness);
+    
+    void setSpringWeight(int which, double weight);
+    void setTetherSpringWeight(int which, double weight);
 
 	double getFrequency(int index);
 	bool pitchEnabled(int index);
@@ -68,11 +71,11 @@ public:
 	double halfStepUp(double freq);
 	double halfStepDown(double freq);
     
-    OwnedArray<Particle>& getTetherParticles(void) { return tetherParticleArray;}
-    OwnedArray<Spring>& getTetherSprings(void) { return tetherSpringArray;}
+    Particle::PtrArr& getTetherParticles(void) { return tetherParticleArray;}
+    Spring::PtrArr& getTetherSprings(void) { return tetherSpringArray;}
     
-    OwnedArray<Particle>& getParticles(void) { return particleArray;}
-    OwnedArray<Spring>& getSprings(void) { return springArray;}
+    Particle::PtrArr& getParticles(void) { return particleArray;}
+    Spring::PtrArr& getSprings(void) { return springArray;}
 
 private:
 	const String intervalLabels[12] = {"minor second",
@@ -110,11 +113,11 @@ private:
     
     const double tuningArray[13] = {1.0,  1.0595, 1.1125, 1.1893, 1.2601, 1.3351, 1.4144, 1.4986, 1.5877, 1.6822, 1.7823, 1.8883, 2.0 };
 
-	OwnedArray<Particle>    particleArray;
-    OwnedArray<Spring>      springArray;
+    Particle::PtrArr    particleArray;
+    Spring::PtrArr      springArray;
     
-    OwnedArray<Particle>    tetherParticleArray;
-    OwnedArray<Spring>      tetherSpringArray;
+    Particle::PtrArr    tetherParticleArray;
+    Spring::PtrArr      tetherSpringArray;
     
 	int numNotes; // number of enabled notes
 };

@@ -12,9 +12,12 @@
 
 #include "Particle.h"
 
-class Spring
+class Spring : public ReferenceCountedObject
 {
 public:
+    typedef ReferenceCountedObjectPtr<Spring> Ptr;
+    typedef Array<Spring::Ptr> PtrArr;
+    
 	Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index);
 	Particle* getA(void);
 	Particle* getB(void);
@@ -33,6 +36,9 @@ public:
     bool getEnabled(void) { return enabled; }
     void setEnabled(bool e) { enabled = e; }
 
+    void setName(String s) { name = s;}
+    String getName(void) { return name;}
+
 private:
 	Particle* a;
 	Particle* b;
@@ -41,6 +47,7 @@ private:
 	double baseInterval;
     bool enabled;
 	int intervalIndex; //will probably replace base interval
+    String name;
 };
 
 #pragma once
