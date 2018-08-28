@@ -14,11 +14,13 @@
 #include "Particle.h"
 #include "Spring.h"
 
-class Physics
+class Physics : public ReferenceCountedObject
 {
 public:
 	Physics();
 	void simulate();
+    
+    float tetherWeight, springWeight;
 
 	void toggleSpring();
 
@@ -32,8 +34,6 @@ public:
     void removeAllNotes(void);
 	void toggleNote(int noteIndex);
     
-    void toggleTetherForNote(int note);
-
 	void updateNotes();
 	void updateFreq();
 
@@ -45,6 +45,12 @@ public:
 	void addSpringsByInterval(double interval);
 	void removeSpringsByInterval(double interval);
 	void adjustSpringsByInterval(double interval, double stiffness);
+    
+    void setSpringWeight(int which, double weight);
+    double getSpringWeight(int which);
+    
+    void setTetherSpringWeight(int which, double weight);
+    double getTetherSpringWeight(int which);
 
 	double getFrequency(int index);
 	bool pitchEnabled(int index);
@@ -56,9 +62,41 @@ public:
 
 	bool checkEnabledParticle(int index);
 
-private:
+	double halfStepUp(double freq);
+	double halfStepDown(double freq);
+    
+    Particle::PtrArr& getTetherParticles(void) { return tetherParticleArray;}
+    Spring::PtrArr& getTetherSprings(void) { return tetherSpringArray;}
+    
+    Particle::PtrArr& getParticles(void) { return particleArray;}
+    Spring::PtrArr& getSprings(void) { return springArray;}
+    
+    bool getTetherSpringEnabled(int which);
+    bool getSpringEnabled(int which);
+    
+    String getTetherSpringName(int which);
+    
+    String getSpringName(int which);
+    
+    void setTetherTuning(int tuning);
+    int getTetherTuning(void){return tetherTuning;}
+    
+    void setIntervalTuning(int tuning);
+    int getIntervalTuning(void){return intervalTuning;}
 
-	OwnedArray<Particle> particleArray;
-    OwnedArray<Spring> springArray;
+private:
+	const int octaves[1] = { 4 }; //will return to when adding more octaves
+    
+    int tetherTuning;
+    int intervalTuning;
+
+    Particle::PtrArr    particleArray;
+    Spring::PtrArr      springArray; // efficiency fix: make this ordered by spring interval 
+    
+    Particle::PtrArr    tetherParticleArray;
+    Spring::PtrArr      tetherSpringArray;
+    
+    
+    
 	int numNotes; // number of enabled notes
 };

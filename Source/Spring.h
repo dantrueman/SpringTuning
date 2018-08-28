@@ -12,22 +12,27 @@
 
 #include "Particle.h"
 
-class Spring
+class Spring : public ReferenceCountedObject
 {
 public:
+    typedef ReferenceCountedObjectPtr<Spring> Ptr;
+    typedef Array<Spring::Ptr> PtrArr;
+    
 	Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index);
 	Particle* getA(void);
 	Particle* getB(void);
 	double getLength();
-	double getStrength();
+    
 	double getBaseInterval();
+    void setBaseInterval(double interval);
+    
 	int getIntervalIndex();
 	Spring copy();
 	bool compare(Spring* that);
 	void print();
-	void lockA();
-	void lockB();
-	void setStrength(double newStrength);
+    
+    void setStrength(double newStrength);
+    double getStrength();
 	void adjustLength(double newLength);
 	//String getStringBaseInterval();
 	void satisfyConstraints(double distance);
@@ -36,8 +41,8 @@ public:
     bool getEnabled(void) { return enabled; }
     void setEnabled(bool e) { enabled = e; }
 
-	bool isALocked();
-	bool isBLocked();
+    void setName(String s) { name = s;}
+    String getName(void) { return name;}
 
 private:
 	Particle* a;
@@ -47,6 +52,7 @@ private:
 	double baseInterval;
     bool enabled;
 	int intervalIndex; //will probably replace base interval
+    String name;
 };
 
 #pragma once

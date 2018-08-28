@@ -16,13 +16,16 @@
 //==============================================================================
 /**
 */
-class SpringTuningAudioProcessorEditor  : public KeyListener, public AudioProcessorEditor, private Timer
+class SpringTuningAudioProcessorEditor  : public KeyListener, public AudioProcessorEditor, private Timer, private Slider::Listener
 {
 public:
     SpringTuningAudioProcessorEditor (SpringTuningAudioProcessor&);
     ~SpringTuningAudioProcessorEditor();
 
     //==============================================================================
+    
+    void drawParticle(Graphics& g);
+    
     void paint (Graphics&) override;
     void resized() override;
 	bool keyPressed(const KeyPress& e, Component*) override;
@@ -38,6 +41,17 @@ private:
     void timerCallback(void) override;
     
     int getNoteFromKeycode(int keycode);
+    
+    OwnedArray<Slider> springSliders;
+    OwnedArray<Slider> tetherSliders;
+    OwnedArray<Label>  springLabels;
+    OwnedArray<Label>  tetherLabels;
+    
+    int springIndices[12];
+    int tetherIndices[12];
+    
+    
+    void sliderValueChanged (Slider* slider) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpringTuningAudioProcessorEditor)
 };

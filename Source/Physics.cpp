@@ -13,23 +13,34 @@
 
 using namespace std;
 
-Physics::Physics(void)
+Physics::Physics(void):
+tetherTuning(1),
+intervalTuning(1)
 {
-	double defaultStrength = 0.2;
     
     particleArray.ensureStorageAllocated(12);
 
-	double xValue = Utilities::cFreq;
+	//double xValue = cFreq;
 
 	for (int i = 0; i < 12; i++)
 	{
-        Particle* particle = new Particle(xValue, 0.0, 1.0);
-        particle->setEnabled(false);
-        particleArray.add(particle);
-		xValue *= Utilities::halfStepRatio;
+        // Active particle
+        Particle* p1 = new Particle(Utilities::cFreq * tunings[tetherTuning][i], i);
+        p1->setEnabled(false);
+        particleArray.add(p1);
+        
+        // Tether particle
+        Particle* p2 = new Particle(Utilities::cFreq * tunings[tetherTuning][i], i);
+        p2->setEnabled(false);
+        p2->setLocked(true);
+        tetherParticleArray.add(p2);
+        
+        Spring* s = new Spring(p1, p2, 0.0, 0.2, 1.0, 0);
+        s->setEnabled(false);
+        s->setName(intervalLabels[i]);
+        tetherSpringArray.add(s);
+        
 	}
-
-	//DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
 
     springArray.ensureStorageAllocated(100);
 	for (int i = 0; i < 12; i++)
@@ -40,41 +51,72 @@ Physics::Physics(void)
             Spring* spring = new Spring(particleArray[j],
                                         particleArray[i],
                                         particleArray[i]->getX() - particleArray[j]->getX(),
-                                        defaultStrength, Utilities::tunings[0][i - j], i - j);
+                                        0.5, tunings[intervalTuning][i - j], i - j);
+            
+            DBG("spring: " + String(i) + " interval: " + String(i-j));
             spring->setEnabled(false);
+            spring->setName(intervalLabels[i-j]);
             springArray.add(spring);
 		}
 	}
 
 	numNotes = 0;
-};
+}
+
+void Physics::setTetherTuning(int tuning)
+{
+    tetherTuning = tuning;
+    
+    for (int i = 0; i < 12; i++)
+    {
+        tetherParticleArray[i]->setX(Utilities::cFreq * tunings[tetherTuning][i]);
+    }
+}
+
+void Physics::setIntervalTuning(int tuning)
+{
+    intervalTuning = tuning;
+    int which = 0;
+    for (int i = 0; i < 12; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            springArray[which++]->setBaseInterval(Utilities::cFreq * tunings[intervalTuning][i-j]);
+        }
+    }
+}
+
+
+
+#define DRAG 1.0f
 void Physics::simulate()
 {
+
     for (auto particle : particleArray)
     {
-		if (particle->getEnabled()) particle->integrate();
+		if (particle->getEnabled() && !particle->getLocked())
+        {
+            particle->integrate(DRAG);
+        }
 	}
+    
+    for (auto spring : tetherSpringArray)
+    {
+        if (spring->getEnabled())
+        {
+            double distance = spring->getA()->getX() - spring->getB()->getX();
+            
+            spring->satisfyConstraints(distance);
+        }
+    }
 
 	for (auto spring : springArray)
 	{
 		if (spring->getEnabled())
 		{
-			bool a = spring->isALocked();
-			bool b = spring->isBLocked();
-			double distance;
-
-			// if both are locked do not integrate
-			if (!(a && b))
-			{
-				// if neither are locked or just a is locked base the distance off of a
-				if (!b) distance = spring->getA()->getX() * Utilities::tunings[0][spring->getIntervalIndex()] - spring->getA()->getX();
-				// if b is locked and a is unlocked base the distance off of b
-				else distance = spring->getB()->getX() - spring->getB()->getX() / Utilities::tunings[0][spring->getIntervalIndex()];
-
-				spring->satisfyConstraints(distance);
-			}
-
-			
+            double distance = spring->getA()->getX() * (tunings[intervalTuning][spring->getIntervalIndex()]) - spring->getA()->getX();
+            
+            spring->satisfyConstraints(distance);
 		}
 	}
     
@@ -98,6 +140,87 @@ void Physics::simulate()
 	*/
 }
 
+void Physics::setSpringWeight(int which, double weight)
+{
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) spring->setStrength(weight);
+    }
+}
+
+double Physics::getSpringWeight(int which)
+{
+    // find first spring with interval that matches which and return its weight
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) return spring->getStrength();
+    }
+    return 0.0;
+}
+
+void Physics::setTetherSpringWeight(int which, double weight)
+{
+    Spring* spring = tetherSpringArray[which];
+    
+    spring->setStrength(weight);
+    
+    Particle* a = spring->getA();
+    Particle* b = spring->getB();
+    Particle* use = nullptr;
+    Particle* tethered = tetherParticleArray[which];
+    
+    if (a != tethered)  use = a;
+    else                use = b;
+
+    if (use != nullptr)
+    {
+        if (weight == 1.0)
+        {
+            use->setLocked(true);
+        }
+        else
+        {
+            use->setLocked(false);
+        }
+    }
+    
+    
+
+}
+
+double Physics::getTetherSpringWeight(int which)
+{
+    return tetherSpringArray[which]->getStrength();
+}
+
+bool Physics::getTetherSpringEnabled(int which)
+{
+    return tetherSpringArray[which]->getEnabled();
+}
+
+bool Physics::getSpringEnabled(int which)
+{
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) return spring->getEnabled();
+    }
+    return false;
+}
+
+String Physics::getTetherSpringName(int which)
+{
+    return tetherSpringArray[which]->getName();
+}
+
+String Physics::getSpringName(int which)
+{
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) return spring->getName();
+    }
+    return "";
+}
+
 void Physics::toggleSpring()
 {
 	//tbd
@@ -106,11 +229,13 @@ void Physics::toggleSpring()
 void Physics::addParticle(int index)
 {
     particleArray[index]->setEnabled(true);
+    tetherParticleArray[index]->setEnabled(true);
 	numNotes++;
 }
 void Physics::removeParticle(int index)
 {
     particleArray[index]->setEnabled(false);
+    tetherParticleArray[index]->setEnabled(false);
 	numNotes--;
 }
 void Physics::addNote(int noteIndex)
@@ -131,36 +256,18 @@ void Physics::removeAllNotes(void)
 void Physics::toggleNote(int noteIndex)
 {
 	int convertedIndex = noteIndex % 12; // just in case a midi value is passed accidentally
-	//DBG("calling " + String(convertedIndex) + " in toggleNote()");
+
 	if (particleArray[convertedIndex]->getEnabled())
 	{
-		//DBG("Removing " + notesInAnOctave[convertedIndex] + " from list.");
 		removeNote(convertedIndex);
 	}
 	else
 	{
-		//DBG("Adding " + notesInAnOctave[convertedIndex] + " to list.");
 		addNote(convertedIndex);
 	}
 }
 
 
-
-void Physics::toggleTetherForNote(int note)
-{
-    Particle* p = particleArray[note];
-    
-    if (p->getLocked())
-    {
-        p->unlock();
-    }
-    else
-    {
-        p->lock();
-        p->setX(Utilities::cFreq * Utilities::tunings[0][note]);
-        
-    }
-}
 
 //probably not necessary until UI?
 void Physics::updateNotes()
@@ -189,22 +296,24 @@ void Physics::addSpringsByNote(int addIndex)
     Particle* p = particleArray[addIndex];
     for (auto spring : springArray)
     {
-        Particle* particleA = spring->getA();
-        Particle* particleB = spring->getB();
+        Particle* a = spring->getA();
+        Particle* b = spring->getB();
         
 		if (!spring->getEnabled())
         {
 			// sets the spring to enabled if one spring matches the index and the other is enabled
-			if (particleA->compare(p))
+			if (a == p)
 			{
-				if (particleB->getEnabled()) spring->setEnabled(true);
+				if (b->getEnabled()) spring->setEnabled(true);
 			}
-			else if (particleB->compare(p))
+			else if (b == p)
 			{
-				if (particleA->getEnabled()) spring->setEnabled(true);
+				if (a->getEnabled()) spring->setEnabled(true);
 			}
         }
 	}
+    
+    tetherSpringArray[addIndex]->setEnabled(true);
 }
 void Physics::removeSpringsByNote(int removeIndex)
 {
@@ -219,6 +328,8 @@ void Physics::removeSpringsByNote(int removeIndex)
             spring->setEnabled(false);
         }
 	}
+    
+    tetherSpringArray[removeIndex]->setEnabled(false);
 }
 void Physics::addSpringsByInterval(double interval)
 {
@@ -244,7 +355,7 @@ void Physics::adjustSpringsByInterval(double interval, double stiffness)
 {
 	for (auto spring : springArray)
 	{
-		if (((abs(spring->getBaseInterval() - interval)) <= 0.001))
+		if ((abs(spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setStrength(stiffness);
         }

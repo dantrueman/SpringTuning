@@ -47,6 +47,11 @@ double Spring::getBaseInterval()
 	return baseInterval;
 }
 
+void Spring::setBaseInterval(double interval)
+{
+    baseInterval = interval;
+}
+
 int Spring::getIntervalIndex()
 {
 	return intervalIndex;
@@ -78,16 +83,6 @@ void Spring::print()
 	DBG("Base Interval: " + String(baseInterval));
 }
 
-void Spring::lockA()
-{
-	a->toggleLock();
-}
-
-void Spring::lockB()
-{
-	b->toggleLock();
-}
-
 void Spring::setStrength(double newStrength)
 {
 	strength = newStrength;
@@ -96,16 +91,6 @@ void Spring::setStrength(double newStrength)
 void Spring::adjustLength(double newLength)
 {
 	springLength = newLength;
-}
-
-bool Spring::isALocked()
-{
-	return a->getLocked();
-}
-
-bool Spring::isBLocked()
-{
-	return b->getLocked();
 }
 
 /*
@@ -170,57 +155,24 @@ String Spring::getStringBaseInterval()
 void Spring::satisfyConstraints(double distance)
 {
 	//DBG("Satisfying constraints for " + String(distance) + " distance \n Printing points:");
-	double diffX = b->getX() - a->getX();
-	double diffY = b->getY() - a->getY();
-	double currentDist = sqrt(diffX * diffX + diffY * diffY);
-	if (currentDist == 0.0) return;
+	double diff = b->getX() - a->getX();
+	if (diff == 0.0) return;
+    
+    const double maxStiffness = 0.2;
+    const double meanStiffness = 0.002;
 
-	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-	//DBG("CurrentDist = " + String(currentDist));
+    diff *= ((diff - distance) / diff) * Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), maxStiffness);
+    
+    if (!a->getLocked())
+    {
+        a->addX(diff);
+    }
 
-	diffX *= ((currentDist - distance) / currentDist) * 0.5;
-	diffY *= ((currentDist - distance) / currentDist) * 0.5;
+    if (!b->getLocked())
+    {
+        b->subX(diff);
+    }
 
-	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-	//a->setX(a->getX() + diffX);
-
-	if (!a->getLocked())
-	{
-		a->addX(diffX);
-		a->addY(diffY);
-	}
-
-	if (!b->getLocked())
-	{
-		b->subX(diffX);
-		b->subY(diffY);
-	}
-
-	//DBG("Printing points after modification");
-	//a->print();
-	//b->print();
-
-	double distX = b->getX() - a->getX();
-	double distY = b->getY() - a->getY();
-
-	//DBG("DiffX = " + String(diffX) + ", DiffY = " + String(diffY));
-
-	springLength = sqrt(distX * distX + distY * distY);
-
-	//DBG("new SpringLength = " + String(springLength));
-
-	/*
-	Aatish's spring function
-	function satisfyconstraints( p1, p2, distance) {
-	diff.subVectors( p2.position, p1.position );
-	var currentDist = diff.length();
-	if ( currentDist == 0 ) return; // prevents division by 0
-	var correction = diff.multiplyScalar( (currentDist - distance) / currentDist);
-	var correctionHalf = correction.multiplyScalar( 0.5 );
-	p1.position.add( correctionHalf );
-	p2.position.sub( correctionHalf );
-	}
-	*/
 }
 
 void Spring::update()
