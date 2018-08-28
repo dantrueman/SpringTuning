@@ -14,8 +14,6 @@
 
 #include "Physics.h"
 
-#include "Inc/OOPS.h"
-
 //==============================================================================
 /**
 */
@@ -67,7 +65,6 @@ public:
 private:
     float tick(float sample);
     stk::BlitSaw osc[12];
-    tCompressor* limiter;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpringTuningAudioProcessor)

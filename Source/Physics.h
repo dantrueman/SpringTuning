@@ -56,7 +56,10 @@ public:
 	void adjustSpringsByInterval(double interval, double stiffness);
     
     void setSpringWeight(int which, double weight);
+    double getSpringWeight(int which);
+    
     void setTetherSpringWeight(int which, double weight);
+    double getTetherSpringWeight(int which);
 
 	double getFrequency(int index);
 	bool pitchEnabled(int index);
@@ -76,6 +79,15 @@ public:
     
     Particle::PtrArr& getParticles(void) { return particleArray;}
     Spring::PtrArr& getSprings(void) { return springArray;}
+    
+    bool getTetherSpringEnabled(int which);
+    bool getSpringEnabled(int which);
+    
+    String getTetherSpringName(int which);
+    
+    String getSpringName(int which);
+    
+    
 
 private:
 	const String intervalLabels[13] = {
@@ -116,10 +128,12 @@ private:
     //const double tuningArray[13] = {1.0,  1.0595, 1.1125, 1.1893, 1.2601, 1.3351, 1.4144, 1.4986, 1.5877, 1.6822, 1.7823, 1.8883, 2.0 };
 
     Particle::PtrArr    particleArray;
-    Spring::PtrArr      springArray;
+    Spring::PtrArr      springArray; // efficiency fix: make this ordered by spring interval 
     
     Particle::PtrArr    tetherParticleArray;
     Spring::PtrArr      tetherSpringArray;
+    
+    
     
 	int numNotes; // number of enabled notes
 };

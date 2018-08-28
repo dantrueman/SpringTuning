@@ -24,22 +24,20 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
     
     for (int i = 0; i < 12; i++)
     {
-        Spring* spring = processor.physics.getTetherSprings().getUnchecked(i);
         Slider* s = new Slider("t" + String(i));
     
         s->addListener(this);
         s->setSliderStyle(Slider::SliderStyle::LinearBar);
         s->setRange(0.0, 1.0);
-        s->setValue(spring->getStrength(), dontSendNotification);
+        s->setValue(processor.physics.getTetherSpringWeight(i), dontSendNotification);
         tetherSliders.add(s);
         
-        spring = processor.physics.getSprings().getUnchecked(i);
         s = new Slider("s" + String(i));
         
         s->addListener(this);
         s->setSliderStyle(Slider::SliderStyle::LinearBar);
         s->setRange(0.0, 1.0);
-        s->setValue(spring->getStrength(), dontSendNotification);
+        s->setValue(processor.physics.getSpringWeight(i), dontSendNotification);
         
         springSliders.add(s);
     }
@@ -93,8 +91,7 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
     int sx = 0, tx = 0;
     for (int i = 0; i < 12; i++)
     {
-        Spring* s = processor.physics.getTetherSprings().getUnchecked(i);
-        if (s->getEnabled())
+        if (processor.physics.getTetherSpringEnabled(i))
         {
             addAndMakeVisible(tetherSliders[i]);
             tetherSliders[i]->setBounds(x_offset, y_offset + (h + yspacing) * tx++, w, h);
@@ -105,12 +102,11 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
             removeChildComponent(tetherSliders[i]);
         }
         
-        s = processor.physics.getSprings().getUnchecked(i);
-        if (s->getEnabled())
+        if (processor.physics.getSpringEnabled(i))
         {
             addAndMakeVisible(springSliders[i]);
             springSliders[i]->setBounds(x_offset + w + xspacing, y_offset + (h + yspacing) * sx++, w, h);
-            //DBG("sspring: " + s->getName());
+            DBG("sspring" + String(i) + " : " + processor.physics.getSpringName(i));
         }
         else
         {

@@ -14,7 +14,6 @@ using namespace std;
 
 Physics::Physics(void)
 {
-	double defaultStrength = 0.2;
     
     particleArray.ensureStorageAllocated(12);
 
@@ -33,14 +32,12 @@ Physics::Physics(void)
         p2->setLocked(true);
         tetherParticleArray.add(p2);
         
-        Spring* s = new Spring(p1, p2, 0.0, (i == 0 ? 1.0 : defaultStrength), 1.0, 0);
+        Spring* s = new Spring(p1, p2, 0.0, 0.2, 1.0, 0);
         s->setEnabled(false);
         s->setName(notesInAnOctave[i]);
         tetherSpringArray.add(s);
         
 	}
-
-	//DBG("xValue: " + String(xValue) + ", cFreq: " + String(cFreq));
 
     springArray.ensureStorageAllocated(100);
 	for (int i = 0; i < 12; i++)
@@ -51,7 +48,7 @@ Physics::Physics(void)
             Spring* spring = new Spring(particleArray[j],
                                         particleArray[i],
                                         particleArray[i]->getX() - particleArray[j]->getX(),
-                                        defaultStrength, tuningArray[i - j], i - j);
+                                        0.5, tuningArray[i - j], i - j);
             
             DBG("spring: " + String(i) + " interval: " + String(i-j));
             spring->setEnabled(false);
@@ -117,7 +114,20 @@ void Physics::simulate()
 
 void Physics::setSpringWeight(int which, double weight)
 {
-    springArray[which]->setStrength(weight);
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) spring->setStrength(weight);
+    }
+}
+
+double Physics::getSpringWeight(int which)
+{
+    // find first spring with interval that matches which and return its weight
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) return spring->getStrength();
+    }
+    return 0.0;
 }
 
 void Physics::setTetherSpringWeight(int which, double weight)
@@ -130,6 +140,38 @@ void Physics::setTetherSpringWeight(int which, double weight)
         tetherParticleArray[which]->setLocked(false);
 }
 
+double Physics::getTetherSpringWeight(int which)
+{
+    return tetherSpringArray[which]->getStrength();
+}
+
+bool Physics::getTetherSpringEnabled(int which)
+{
+    return tetherSpringArray[which]->getEnabled();
+}
+
+bool Physics::getSpringEnabled(int which)
+{
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) return spring->getEnabled();
+    }
+    return false;
+}
+
+String Physics::getTetherSpringName(int which)
+{
+    return tetherSpringArray[which]->getName();
+}
+
+String Physics::getSpringName(int which)
+{
+    for (auto spring : springArray)
+    {
+        if (spring->getIntervalIndex() == which) return spring->getName();
+    }
+    return "";
+}
 
 double Physics::noteToFreq(String whichNote)
 {
@@ -250,11 +292,11 @@ void Physics::addSpringsByNote(int addIndex)
 		if (!spring->getEnabled())
         {
 			// sets the spring to enabled if one spring matches the index and the other is enabled
-			if (a->getNote() == p->getNote())
+			if (a == p)
 			{
 				if (b->getEnabled()) spring->setEnabled(true);
 			}
-			else if (b->getNote() == p->getNote())
+			else if (b == p)
 			{
 				if (a->getEnabled()) spring->setEnabled(true);
 			}
@@ -283,7 +325,7 @@ void Physics::addSpringsByInterval(double interval)
 {
 	for (auto spring : springArray)
 	{
-        if (!spring->getEnabled() && ((spring->getBaseInterval() - interval) <= 0.001))
+        if (!spring->getEnabled() && (abs(spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setEnabled(true);
         }
@@ -293,7 +335,7 @@ void Physics::removeSpringsByInterval(double interval)
 {
     for (auto spring : springArray)
 	{
-        if (spring->getEnabled() && ((spring->getBaseInterval() - interval) <= 0.001))
+        if (spring->getEnabled() && (abs(spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setEnabled(false);
         }
@@ -303,7 +345,7 @@ void Physics::adjustSpringsByInterval(double interval, double stiffness)
 {
 	for (auto spring : springArray)
 	{
-		if (((spring->getBaseInterval() - interval) <= 0.001))
+		if ((abs(spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setStrength(stiffness);
         }

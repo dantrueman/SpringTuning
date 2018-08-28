@@ -153,8 +153,11 @@ void Spring::satisfyConstraints(double distance)
 	double diff = b->getX() - a->getX();
 
 	if (diff == 0.0) return;
+    
+    const double maxStiffness = 0.1;
+    const double meanStiffness = 0.002;
 
-	diff *= ((diff - distance) / diff) * strength;
+    diff *= ((diff - distance) / diff) * Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), 0.2);
     
     if (!a->getLocked())
     {

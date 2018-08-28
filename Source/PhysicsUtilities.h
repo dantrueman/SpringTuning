@@ -17,6 +17,27 @@
 class Utilities
 {
 public:
+
+    static double   softClip(double val, double thresh)
+    {
+        double x;
+        
+        if(val > thresh)
+        {
+            x = thresh / val;
+            return (1.0 - x) * (1.0 - thresh) + thresh;
+        }
+        else if(val < -thresh)
+        {
+            x = -thresh / val;
+            return -((1.0 - x) * (1.0 - thresh) + thresh);
+        }
+        else
+        {
+            return val;
+        }
+    }
+    
     static double ftom(double f)
     {
         if (f < 0.0) f = 0.0;

@@ -34,18 +34,12 @@ SpringTuningAudioProcessor::~SpringTuningAudioProcessor()
 //==============================================================================
 void SpringTuningAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    OOPSInit(sampleRate, samplesPerBlock, nullptr);
-    
     for (int i = 0; i < 12; i++)
     {
         osc[i].setSampleRate(sampleRate);
         osc[i].setHarmonics(15);
         osc[i].setFrequency(stk::Midi2Pitch[48 + i]);
     }
-    
-    limiter = tCompressorInit();
-    
-    
 }
 
 float SpringTuningAudioProcessor::tick(float sample)
@@ -61,7 +55,7 @@ float SpringTuningAudioProcessor::tick(float sample)
     
     sample /= 12.0f;
     
-    sample = OOPS_softClip(sample, 1.0);
+    sample = Utilities::softClip(sample, 1.0);
 
 	//physics.print();
     
@@ -237,16 +231,7 @@ void SpringTuningAudioProcessor::changeProgramName (int index, const String& new
 
 void SpringTuningAudioProcessor::notePressed(int note)
 {
-    /*
-    if (lock)
-    {
-        //physics.toggleTetherForNote(note);
-    }
-    else
-     */
-    
     physics.toggleNote(note);
-	
 }
 
 void SpringTuningAudioProcessor::clear(void)
