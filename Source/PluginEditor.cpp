@@ -31,7 +31,6 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
         s->setSliderStyle(Slider::SliderStyle::LinearBar);
         s->setRange(0.0, 1.0);
         s->setValue(spring->getStrength(), dontSendNotification);
-        
         tetherSliders.add(s);
         
         spring = processor.physics.getSprings().getUnchecked(i);
@@ -99,6 +98,7 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
         {
             addAndMakeVisible(tetherSliders[i]);
             tetherSliders[i]->setBounds(x_offset, y_offset + (h + yspacing) * tx++, w, h);
+            //DBG("tspring: " + s->getName());
         }
         else
         {
@@ -110,13 +110,12 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
         {
             addAndMakeVisible(springSliders[i]);
             springSliders[i]->setBounds(x_offset + w + xspacing, y_offset + (h + yspacing) * sx++, w, h);
+            //DBG("sspring: " + s->getName());
         }
         else
         {
             removeChildComponent(springSliders[i]);
         }
-        
-        DBG("strength" +String(i) + " = " + String(s->getStrength()));
     }
 }
 
@@ -276,8 +275,6 @@ int SpringTuningAudioProcessorEditor::getNoteFromKeycode(int code)
 bool SpringTuningAudioProcessorEditor::keyPressed(const KeyPress& e, Component*)
 {
 	int code = e.getKeyCode();
-    
-    DBG("key pressed: " + String(code));
     
     if (code == KeyPress::spaceKey)
     {

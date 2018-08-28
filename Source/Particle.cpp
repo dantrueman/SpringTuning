@@ -89,6 +89,7 @@ void Particle::integrate(double drag)
     x = newX;
     
     if (x < 0.0) x = 0.0;
+    else if (x > 10000.0f) x = 10000.0f;
 	
 
 	//Aatish's function:

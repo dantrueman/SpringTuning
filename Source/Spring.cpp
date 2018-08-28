@@ -156,12 +156,12 @@ void Spring::satisfyConstraints(double distance)
 
 	diff *= ((diff - distance) / diff) * strength;
     
-    if (!a->getLocked() && (a->getNote() > 0))
+    if (!a->getLocked())
     {
         a->addX(diff);
     }
 
-    if (!b->getLocked() && (b->getNote() > 0))
+    if (!b->getLocked())
     {
         b->subX(diff);
     }

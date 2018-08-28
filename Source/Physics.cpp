@@ -12,17 +12,6 @@
 
 using namespace std;
 
-
-void Physics::setSpringWeight(int which, double weight)
-{
-    springArray[which]->setStrength(weight);
-}
-
-void Physics::setTetherSpringWeight(int which, double weight)
-{
-    tetherSpringArray[which]->setStrength(weight);
-}
-
 Physics::Physics(void)
 {
 	double defaultStrength = 0.2;
@@ -63,6 +52,8 @@ Physics::Physics(void)
                                         particleArray[i],
                                         particleArray[i]->getX() - particleArray[j]->getX(),
                                         defaultStrength, tuningArray[i - j], i - j);
+            
+            DBG("spring: " + String(i) + " interval: " + String(i-j));
             spring->setEnabled(false);
             spring->setName(intervalLabels[i-j]);
             springArray.add(spring);
@@ -78,7 +69,7 @@ void Physics::simulate()
 
     for (auto particle : particleArray)
     {
-		if (particle->getNote() > 0 && particle->getEnabled())
+		if (particle->getEnabled() && !particle->getLocked())
         {
             particle->integrate(DRAG);
         }
@@ -123,6 +114,22 @@ void Physics::simulate()
  }
 	*/
 }
+
+void Physics::setSpringWeight(int which, double weight)
+{
+    springArray[which]->setStrength(weight);
+}
+
+void Physics::setTetherSpringWeight(int which, double weight)
+{
+    tetherSpringArray[which]->setStrength(weight);
+    
+    if (weight == 1.0) 
+        tetherParticleArray[which]->setLocked(true);
+    else
+        tetherParticleArray[which]->setLocked(false);
+}
+
 
 double Physics::noteToFreq(String whichNote)
 {
@@ -276,7 +283,7 @@ void Physics::addSpringsByInterval(double interval)
 {
 	for (auto spring : springArray)
 	{
-        if (!spring->getEnabled() && (abs(spring->getBaseInterval() - interval) <= 0.001))
+        if (!spring->getEnabled() && ((spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setEnabled(true);
         }
@@ -286,7 +293,7 @@ void Physics::removeSpringsByInterval(double interval)
 {
     for (auto spring : springArray)
 	{
-        if (spring->getEnabled() && (abs(spring->getBaseInterval() - interval) <= 0.001))
+        if (spring->getEnabled() && ((spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setEnabled(false);
         }
@@ -296,7 +303,7 @@ void Physics::adjustSpringsByInterval(double interval, double stiffness)
 {
 	for (auto spring : springArray)
 	{
-		if (((abs(spring->getBaseInterval() - interval)) <= 0.001))
+		if (((spring->getBaseInterval() - interval) <= 0.001))
         {
             spring->setStrength(stiffness);
         }
