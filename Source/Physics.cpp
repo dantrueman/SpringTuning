@@ -50,7 +50,7 @@ intervalTuning(0)
 			//will add in a better length calculation method once mapping is figured out
             Spring* spring = new Spring(particleArray[j],
                                         particleArray[i],
-                                        (i == 0) ? 1.0 : 0.5, tunings[intervalTuning][i - j], i - j);
+                                        (i == 2) ? 1.0 : 0.5, tunings[intervalTuning][i - j], i - j);
             
             DBG("spring: " + String(i) + " interval: " + String(i-j));
             
