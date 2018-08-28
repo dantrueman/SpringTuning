@@ -15,7 +15,7 @@ using namespace std;
 
 Physics::Physics(void):
 tetherTuning(1),
-intervalTuning(1)
+intervalTuning(0)
 {
     
     particleArray.ensureStorageAllocated(12);
@@ -35,7 +35,7 @@ intervalTuning(1)
         p2->setLocked(true);
         tetherParticleArray.add(p2);
         
-        Spring* s = new Spring(p1, p2, 0.0, 0.2, 1.0, 0);
+        Spring* s = new Spring(p1, p2,  0.2, 1.0, 0);
         s->setEnabled(false);
         s->setName(intervalLabels[i]);
         tetherSpringArray.add(s);
@@ -50,10 +50,10 @@ intervalTuning(1)
 			//will add in a better length calculation method once mapping is figured out
             Spring* spring = new Spring(particleArray[j],
                                         particleArray[i],
-                                        particleArray[i]->getX() - particleArray[j]->getX(),
-                                        0.5, tunings[intervalTuning][i - j], i - j);
+                                        (i == 0) ? 1.0 : 0.5, tunings[intervalTuning][i - j], i - j);
             
             DBG("spring: " + String(i) + " interval: " + String(i-j));
+            
             spring->setEnabled(false);
             spring->setName(intervalLabels[i-j]);
             springArray.add(spring);
@@ -104,7 +104,7 @@ void Physics::simulate()
     {
         if (spring->getEnabled())
         {
-            double distance = spring->getA()->getX() - spring->getB()->getX();
+            double distance = spring->getB()->getRestX() - spring->getA()->getRestX();
             
             spring->satisfyConstraints(distance);
         }
@@ -114,30 +114,11 @@ void Physics::simulate()
 	{
 		if (spring->getEnabled())
 		{
-            double distance = spring->getA()->getX() * (tunings[intervalTuning][spring->getIntervalIndex()]) - spring->getA()->getX();
+            double distance = spring->getA()->getX() * tunings[tetherTuning][spring->getIntervalIndex()] - spring->getA()->getX();
             
             spring->satisfyConstraints(distance);
 		}
 	}
-    
-	//something about distance, integrating particles
-
-	//Aatish's function
-	/*
-	function simulate() {
-  for ( particles = cloth.particles, i = 0, il = particles.length ; i < il; i ++ )
-  {
-    particle = particles[ i ];
-    particle.integrate( TIMESTEP_SQ ); // performs verlet integration
-  }
-  // Start constraints
-  constraints = cloth.constraints,
-  il = constraints.length;
-  for ( i = 0; i < il; i ++ ) {
-    constraint = constraints[ i ];
-    satisfyconstraints( constraint[ 0 ], constraint[ 1 ], constraint[ 2 ], constraint[ 3] );
- }
-	*/
 }
 
 void Physics::setSpringWeight(int which, double weight)

@@ -68,7 +68,7 @@ void SpringTuningAudioProcessorEditor::sliderValueChanged (Slider* slider)
         }
         else if (name == ("s"+String(i)))
         {
-            processor.physics.setSpringWeight(i, value);
+            processor.physics.setSpringWeight(i, 1.0 - value);
             break;
         }
     }
@@ -89,6 +89,7 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
     repaint();
     
     int sx = 0, tx = 0;
+    DBG("~ ~ ~ ~ ~ ~ ~");
     for (int i = 0; i < 12; i++)
     {
         if (processor.physics.getTetherSpringEnabled(i))

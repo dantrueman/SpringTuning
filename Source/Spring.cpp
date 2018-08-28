@@ -11,10 +11,9 @@
 #include "Spring.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Spring::Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index) :
+Spring::Spring(Particle* firstPoint, Particle* secondPoint, double str, double interval, int index) :
 	a(firstPoint),
 	b(secondPoint),
-	springLength(length),
 	strength(str),
 	baseInterval(interval),
 	intervalIndex(index)
@@ -30,11 +29,6 @@ Particle* Spring::getA()
 Particle* Spring::getB()
 {
 	return b;
-}
-
-double Spring::getLength()
-{
-	return springLength;
 }
 
 double Spring::getStrength()
@@ -59,7 +53,7 @@ int Spring::getIntervalIndex()
 
 Spring Spring::copy()
 {
-	Spring copySpring(a, b, springLength, strength, baseInterval, intervalIndex);
+	Spring copySpring(a, b, strength, baseInterval, intervalIndex);
 	return copySpring;
 }
 
@@ -67,7 +61,6 @@ bool Spring::compare(Spring* that)
 {
 	return (a->compare(that->getA()) &&
 		b->compare(that->getB()) &&
-		springLength == that->getLength() &&
 		strength == that->getStrength() &&
 		baseInterval == that->getBaseInterval());
 }
@@ -78,7 +71,6 @@ void Spring::print()
 	a->print();
 	DBG("\nPoint B:");
 	b->print();
-	DBG("\nLength: " + String(springLength));
 	DBG("Strength: " + String(strength));
 	DBG("Base Interval: " + String(baseInterval));
 }
@@ -86,11 +78,6 @@ void Spring::print()
 void Spring::setStrength(double newStrength)
 {
 	strength = newStrength;
-}
-
-void Spring::adjustLength(double newLength)
-{
-	springLength = newLength;
 }
 
 /*
@@ -158,8 +145,8 @@ void Spring::satisfyConstraints(double distance)
 	double diff = b->getX() - a->getX();
 	if (diff == 0.0) return;
     
-    const double maxStiffness = 0.2;
-    const double meanStiffness = 0.002;
+    const double maxStiffness = 0.5;
+    const double meanStiffness = 0.05;
 
     diff *= ((diff - distance) / diff) * Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), maxStiffness);
     
