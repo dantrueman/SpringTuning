@@ -163,7 +163,7 @@ void Physics::setTetherSpringWeight(int which, double weight)
         else
         {
             use->setLocked(false);
-			if (weight == 0.0) use->setEnabled(false);
+			if (weight == 0.0) tethered->setEnabled(false);
         }
     }
     
