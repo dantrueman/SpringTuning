@@ -19,7 +19,7 @@ public:
     typedef ReferenceCountedObjectPtr<Particle> Ptr;
     typedef Array<Particle::Ptr> PtrArr;
     
-	Particle(double xVal, int note);
+	Particle(double xVal, int n, String s);
     
     void setRestX(double);
     double getRestX();

@@ -18,7 +18,7 @@ public:
     typedef ReferenceCountedObjectPtr<Spring> Ptr;
     typedef Array<Spring::Ptr> PtrArr;
     
-	Spring(Particle* firstPoint, Particle* secondPoint, double str, double interval, int index);
+	Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index);
 	Particle* getA(void);
 	Particle* getB(void);
 	double getLength();
@@ -33,9 +33,9 @@ public:
     
     void setStrength(double newStrength);
     double getStrength();
-	void adjustLength(double newLength);
+	void setLength(double newLength);
 	//String getStringBaseInterval();
-	void satisfyConstraints(double distance);
+	void satisfyConstraints();
 	void update();
     
     bool getEnabled(void) { return enabled; }
@@ -48,6 +48,7 @@ private:
 	Particle* a;
 	Particle* b;
 	double strength;
+	double restingLength;
 	double baseInterval;
     bool enabled;
 	int intervalIndex; //will probably replace base interval

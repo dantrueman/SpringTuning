@@ -43,6 +43,11 @@ constexpr static const double tunings[6][13] = {
     { 1, 567 / 512, 9 / 8, 147 / 128, 21 / 16, 1323 / 1024, 189 / 128, 3 / 2, 49 / 32, 7 / 4, 441 / 256, 63 / 32, 2 / 1}, // well tuned piano
     { 1, 256 / 243, 9 / 8, 32 / 27, 81 / 64, 4 / 3, 729 / 512, 3 / 2, 128 / 81, 27 / 16, 16 / 9, 243 / 128, 2 / 1} }; //pythagorean
 
+//interval lengths (not ratios) in cents, will need to add more tuning systems later
+constexpr static const double centLengths[1][13] = {
+	{ 0, 111.731, 203.910, 315.641, 386.314, 498.045, 590.224 , 701.995, 813.687, 884.359, 1017.597, 1088.269, 1200 } // common just
+};
+
 class Utilities
 {
 public:
@@ -78,11 +83,15 @@ public:
         if (f < 0.0) f = 0.0;
         return (69.0f + 12.0f * log2(f * INV_440));
     }
-    
-	static double noteToFreq(String whichNote)
+
+	static double map(double value, double valueMin, double valueMax, double mapMin, double mapMax)
 	{
-		int noteIndex = 60;
-		//int noteIndex = Array::indexOf(notesInAnOctave, whichNote); // will eventually need to change
+		return ((value - valueMin) / (valueMax - valueMin)) * (mapMax - mapMin) + mapMin;
+	}
+    
+	static double noteToFreq(int noteIndex)
+	{
+		//int midiIndex = 60 + noteIndex; may need to do with multiple octaves
 		return (double)(cFreq * pow(2.0, noteIndex / 12.0)); // will need to change when multiple octaves are added
 	}
 
@@ -93,9 +102,9 @@ public:
 		return (double)(cFreq * pow(2.0, noteValue / 12.0)) / 32; // will need to change when multiple octaves are added
 	}
 
-	static int noteToCents(String whichNote)
+	static int noteToCents(int noteIndex)
 	{
-		return (int)(freqToCents(noteToFreq(whichNote)));
+		return (int)(freqToCents(noteToFreq(noteIndex)));
 	}
 	static int freqToCents(double whichFreq)
 	{
@@ -105,6 +114,13 @@ public:
 	{
 		return cFreq * pow(2, centsFromC / 1200.0);
 	}
+
+	//will eventually need to do centsToPos
+	
+	//same with noteToPos
+	
+	//same with posToCents
+
 	static int ratioToCents(double ratio)
 	{
 		return 1200 * log(ratio) / log(2);

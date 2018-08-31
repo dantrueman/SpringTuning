@@ -68,7 +68,7 @@ void SpringTuningAudioProcessorEditor::sliderValueChanged (Slider* slider)
         }
         else if (name == ("s"+String(i)))
         {
-            processor.physics.setSpringWeight(i, 1.0 - value);
+            processor.physics.setSpringWeight(i, value);
             break;
         }
     }
@@ -89,7 +89,7 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
     repaint();
     
     int sx = 0, tx = 0;
-    DBG("~ ~ ~ ~ ~ ~ ~");
+    //DBG("~ ~ ~ ~ ~ ~ ~");
     for (int i = 0; i < 12; i++)
     {
         if (processor.physics.getTetherSpringEnabled(i))
@@ -107,7 +107,7 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
         {
             addAndMakeVisible(springSliders[i]);
             springSliders[i]->setBounds(x_offset + w + xspacing, y_offset + (h + yspacing) * sx++, w, h);
-            DBG("sspring" + String(i) + " : " + processor.physics.getSpringName(i));
+            //DBG("sspring" + String(i) + " : " + processor.physics.getSpringName(i));
         }
         else
         {
@@ -142,7 +142,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
         if (s->getEnabled())
         {
             Particle* a = s->getA();
-            midi = Utilities::ftom(a->getX());
+            midi = Utilities::ftom(Utilities::centsToFreq(a->getX()));
             scalex = ((midi - 60.0f) / 12.0f);
             
             radians = scalex * Utilities::twopi - Utilities::pi * 0.5;
@@ -151,7 +151,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             float cya = centery + sinf(radians) * radius;
             
             Particle* b = s->getB();
-            midi = Utilities::ftom(b->getX());
+            midi = Utilities::ftom(Utilities::centsToFreq(b->getX()));
             scalex = ((midi - 60.0f) / 12.0f);
             
             radians = scalex * Utilities::twopi - Utilities::pi * 0.5;
@@ -170,7 +170,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
         if (p->getEnabled())
         {
             // DRAW REST PARTICLE
-            midi = Utilities::ftom(p->getRestX());
+            midi = Utilities::ftom(Utilities::centsToFreq(p->getRestX()));
             scalex = ((midi - 60.0f) / 12.0f);
             posx = scalex *  (getWidth() - 2*x_offset);
             
@@ -189,7 +189,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
         if (p->getEnabled())
         {
             // DRAW PARTICLE IN MOTION
-            midi = Utilities::clip(0, Utilities::ftom(p->getX()), 128);
+            midi = Utilities::clip(0, Utilities::ftom(Utilities::centsToFreq(p->getX())), 128);
             scalex = ((midi - 60.0f) / 12.0f);
             posx = scalex *  (getWidth() - 2*x_offset);
             

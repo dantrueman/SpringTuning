@@ -11,9 +11,10 @@
 #include "Spring.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Spring::Spring(Particle* firstPoint, Particle* secondPoint, double str, double interval, int index) :
+Spring::Spring(Particle* firstPoint, Particle* secondPoint, double length, double str, double interval, int index) :
 	a(firstPoint),
 	b(secondPoint),
+	restingLength(length),
 	strength(str),
 	baseInterval(interval),
 	intervalIndex(index)
@@ -29,6 +30,11 @@ Particle* Spring::getA()
 Particle* Spring::getB()
 {
 	return b;
+}
+
+double Spring::getLength()
+{
+	return restingLength;
 }
 
 double Spring::getStrength()
@@ -53,7 +59,7 @@ int Spring::getIntervalIndex()
 
 Spring Spring::copy()
 {
-	Spring copySpring(a, b, strength, baseInterval, intervalIndex);
+	Spring copySpring(a, b, restingLength, strength, baseInterval, intervalIndex);
 	return copySpring;
 }
 
@@ -73,6 +79,12 @@ void Spring::print()
 	b->print();
 	DBG("Strength: " + String(strength));
 	DBG("Base Interval: " + String(baseInterval));
+}
+
+//we probably don't want to be messing around with this but it can't hurt to have the method
+void Spring::setLength(double newLength)
+{
+	restingLength = newLength;
 }
 
 void Spring::setStrength(double newStrength)
@@ -139,25 +151,41 @@ String Spring::getStringBaseInterval()
 */
 
 //still needs tweaking
-void Spring::satisfyConstraints(double distance)
+void Spring::satisfyConstraints()
 {
-	//DBG("Satisfying constraints for " + String(distance) + " distance \n Printing points:");
 	double diff = b->getX() - a->getX();
 	if (diff == 0.0) return;
     
+	//DBG("Satisfying constraints for " + getA()->getName() + " to " + getB()->getName());
+	//DBG("Initial diff: " + String(diff));
+
     const double maxStiffness = 0.5;
     const double meanStiffness = 0.05;
 
-    diff *= ((diff - distance) / diff) * Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), maxStiffness);
-    
+	double actualStrength = Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), maxStiffness);
+
+	/*
+	DBG("Variables: ");
+	DBG("Weight = " + String(strength));
+	DBG("Strength = " + String(actualStrength));
+	DBG("Diff - RestingLength = " + String(diff - restingLength));
+	DBG("/Diff = " + String((diff - restingLength) / diff));
+	DBG("* strength = " + String((diff - restingLength) / diff * actualStrength));
+	*/
+
+    diff *= ((diff - restingLength) / diff) * actualStrength;
+	//DBG("Final diff: " + String(diff));
+
     if (!a->getLocked())
     {
         a->addX(diff);
+		//DBG("New A = " + String(a->getX()));
     }
 
     if (!b->getLocked())
     {
         b->subX(diff);
+		//DBG("New B = " + String(b->getX()));
     }
 
 }
