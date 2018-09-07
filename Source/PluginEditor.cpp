@@ -92,27 +92,11 @@ void SpringTuningAudioProcessorEditor::timerCallback(void)
     DBG("~ ~ ~ ~ ~ ~ ~");
     for (int i = 0; i < 12; i++)
     {
-        if (processor.physics.getTetherSpringEnabled(i))
-        {
-            addAndMakeVisible(tetherSliders[i]);
-            tetherSliders[i]->setBounds(x_offset, y_offset + (h + yspacing) * tx++, w, h);
-            //DBG("tspring: " + s->getName());
-        }
-        else
-        {
-            removeChildComponent(tetherSliders[i]);
-        }
-        
-        if (processor.physics.getSpringEnabled(i))
-        {
-            addAndMakeVisible(springSliders[i]);
-            springSliders[i]->setBounds(x_offset + w + xspacing, y_offset + (h + yspacing) * sx++, w, h);
-            DBG("sspring" + String(i) + " : " + processor.physics.getSpringName(i));
-        }
-        else
-        {
-            removeChildComponent(springSliders[i]);
-        }
+        addAndMakeVisible(tetherSliders[i]);
+        tetherSliders[i]->setBounds(x_offset, y_offset + (h + yspacing) * tx++, w, h);
+
+        addAndMakeVisible(springSliders[i]);
+        springSliders[i]->setBounds(x_offset + w + xspacing, y_offset + (h + yspacing) * sx++, w, h);
     }
 }
 

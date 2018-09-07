@@ -139,16 +139,17 @@ String Spring::getStringBaseInterval()
 */
 
 //still needs tweaking
-void Spring::satisfyConstraints(double distance)
+void Spring::satisfyConstraints(double restLength, bool interval)
 {
 	//DBG("Satisfying constraints for " + String(distance) + " distance \n Printing points:");
-	double diff = b->getX() - a->getX();
+
+    double diff =(b->getX() - a->getX());
 	if (diff == 0.0) return;
     
-    const double maxStiffness = 0.5;
+    const double maxStiffness = 0.1;
     const double meanStiffness = 0.05;
 
-    diff *= ((diff - distance) / diff) * Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), maxStiffness);
+    diff *= 0.5 * ((diff - restLength) / diff ) * Utilities::clip(0.0, (meanStiffness * strength) / (1.0 - strength), maxStiffness);
     
     if (!a->getLocked())
     {

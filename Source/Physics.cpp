@@ -106,7 +106,7 @@ void Physics::simulate()
         {
             double distance = spring->getB()->getRestX() - spring->getA()->getRestX();
             
-            spring->satisfyConstraints(distance);
+            spring->satisfyConstraints(distance, false);
         }
     }
 
@@ -114,9 +114,9 @@ void Physics::simulate()
 	{
 		if (spring->getEnabled())
 		{
-            double distance = spring->getA()->getX() * tunings[tetherTuning][spring->getIntervalIndex()] - spring->getA()->getX();
+            double distance = spring->getBaseInterval();
             
-            spring->satisfyConstraints(distance);
+            spring->satisfyConstraints(distance, true);
 		}
 	}
 }
@@ -125,7 +125,10 @@ void Physics::setSpringWeight(int which, double weight)
 {
     for (auto spring : springArray)
     {
-        if (spring->getIntervalIndex() == which) spring->setStrength(weight);
+        if (spring->getIntervalIndex() == which)
+        {
+            spring->setStrength(weight);
+        }
     }
 }
 
@@ -157,6 +160,7 @@ void Physics::setTetherSpringWeight(int which, double weight)
     {
         if (weight == 1.0)
         {
+            use->setX(use->getRestX());
             use->setLocked(true);
         }
         else
