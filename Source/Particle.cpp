@@ -11,12 +11,14 @@
 #include "Particle.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-Particle::Particle(double xVal, int n):
+Particle::Particle(double xVal, int n, String s):
 x(xVal),
 restX(xVal),
 prevX(xVal),
 note(n),
-enabled(false)
+enabled(false),
+locked(false),
+name(s)
 {
 
 }
@@ -43,8 +45,11 @@ double Particle::getX()
 
 Particle* Particle::copy()
 {
-	return new Particle(x, note);
-	
+	Particle* p = new Particle(x, note, name);
+	p->setEnabled(enabled);
+	p->setLocked(locked);
+
+	return p;
 }
 
 bool Particle::compare(Particle* that)

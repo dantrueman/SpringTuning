@@ -25,17 +25,18 @@ intervalTuning(0)
 	for (int i = 0; i < 12; i++)
 	{
         // Active particle
-        Particle* p1 = new Particle(Utilities::cFreq * tunings[tetherTuning][i], i);
+        Particle* p1 = new Particle(i * 100, i, notesInAnOctave[i]);
         p1->setEnabled(false);
+		p1->setLocked(false);
         particleArray.add(p1);
         
         // Tether particle
-        Particle* p2 = new Particle(Utilities::cFreq * tunings[tetherTuning][i], i);
+        Particle* p2 = new Particle(i * 100, i, notesInAnOctave[i]);
         p2->setEnabled(false);
         p2->setLocked(true);
         tetherParticleArray.add(p2);
         
-        Spring* s = new Spring(p1, p2,  0.2, 1.0, 0);
+        Spring* s = new Spring(p1, p2,  0.0, 0.2, 1.0, 0);
         s->setEnabled(false);
         s->setName(intervalLabels[i]);
         tetherSpringArray.add(s);
@@ -50,9 +51,9 @@ intervalTuning(0)
 			//will add in a better length calculation method once mapping is figured out
             Spring* spring = new Spring(particleArray[j],
                                         particleArray[i],
-                                        (i == 2) ? 1.0 : 0.5, tunings[intervalTuning][i - j], i - j);
+				centLengths[0][i - j], (i == 2) ? 1.0 : 0.5, tunings[intervalTuning][i - j], i - j);
             
-            DBG("spring: " + String(i) + " interval: " + String(i-j));
+            //DBG("spring: " + String(i) + " interval: " + String(i-j));
             
             spring->setEnabled(false);
             spring->setName(intervalLabels[i-j]);
@@ -104,9 +105,7 @@ void Physics::simulate()
     {
         if (spring->getEnabled())
         {
-            double distance = spring->getB()->getRestX() - spring->getA()->getRestX();
-            
-            spring->satisfyConstraints(distance, false);
+            spring->satisfyConstraints();
         }
     }
 
@@ -114,9 +113,7 @@ void Physics::simulate()
 	{
 		if (spring->getEnabled())
 		{
-            double distance = spring->getBaseInterval();
-            
-            spring->satisfyConstraints(distance, true);
+            spring->satisfyConstraints();
 		}
 	}
 }
@@ -166,6 +163,7 @@ void Physics::setTetherSpringWeight(int which, double weight)
         else
         {
             use->setLocked(false);
+			if (weight == 0.0) tethered->setEnabled(false);
         }
     }
     
@@ -349,7 +347,7 @@ void Physics::adjustSpringsByInterval(double interval, double stiffness)
 
 double Physics::getFrequency(int index)
 {
-	return particleArray[index]->getX();
+	return Utilities::centsToFreq((int) particleArray[index]->getX());
 }
 
 bool Physics::pitchEnabled(int index)

@@ -61,9 +61,6 @@ public:
 	void printActiveSprings();
 
 	bool checkEnabledParticle(int index);
-
-	double halfStepUp(double freq);
-	double halfStepDown(double freq);
     
     Particle::PtrArr& getTetherParticles(void) { return tetherParticleArray;}
     Spring::PtrArr& getTetherSprings(void) { return tetherSpringArray;}

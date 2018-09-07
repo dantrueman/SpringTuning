@@ -232,6 +232,7 @@ void SpringTuningAudioProcessor::changeProgramName (int index, const String& new
 void SpringTuningAudioProcessor::notePressed(int note)
 {
     physics.toggleNote(note);
+	//physics.printActiveParticles();
 }
 
 void SpringTuningAudioProcessor::clear(void)
