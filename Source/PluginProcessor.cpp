@@ -49,15 +49,14 @@ float SpringTuningAudioProcessor::tick(float sample)
     for (int i = 0; i < 12; i++)
     {
         // set frequencies, then if osc is on, tick here, if not dont
-		//osc[i].setFrequency(physics.getFrequency(i));
-		if (physics.pitchEnabled(i)) sample += osc[i].tick();
+		if (stuning.pitchEnabled(i)) sample += osc[i].tick();
     }
     
     sample /= 12.0f;
     
     sample = Utilities::softClip(sample, 1.0);
 
-	//physics.print();
+	//stuning.print();
     
     return sample;
 }
@@ -75,16 +74,16 @@ void SpringTuningAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 		//DBG("message at " + String(noteNumber));
 		if (m.isNoteOn())
 		{
-			physics.toggleNote(noteNumber);
+			stuning.toggleNote(noteNumber);
 		}
 	}
     
-	// Run physics simulation
-	physics.simulate();
+	// Run stuning simulation
+	stuning.simulate();
 
 	for (int i = 0; i < 12; ++i)
 	{
-		if (physics.pitchEnabled(i)) osc[i].setFrequency(physics.getFrequency(i));
+		if (stuning.pitchEnabled(i)) osc[i].setFrequency(stuning.getFrequency(i));
 	}
     
     // Clear left and right channels
@@ -231,13 +230,13 @@ void SpringTuningAudioProcessor::changeProgramName (int index, const String& new
 
 void SpringTuningAudioProcessor::notePressed(int note)
 {
-    physics.toggleNote(note);
-	//physics.printActiveParticles();
+    stuning.toggleNote(note);
+	//stuning.printActiveParticles();
 }
 
 void SpringTuningAudioProcessor::clear(void)
 {
-    physics.removeAllNotes();
+    stuning.removeAllNotes();
 }
 
 

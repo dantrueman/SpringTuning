@@ -14,15 +14,16 @@
               file="Source/PluginEditor.cpp"/>
         <FILE id="c9SSxo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       </GROUP>
-      <GROUP id="{4A964EF9-A04E-7FCB-747B-C0CE05D6B181}" name="Physics">
-        <FILE id="IWrcno" name="PhysicsUtilities.h" compile="0" resource="0"
-              file="Source/PhysicsUtilities.h"/>
-        <FILE id="lwphGt" name="Particle.cpp" compile="1" resource="0" file="Source/Particle.cpp"/>
-        <FILE id="RLQIy0" name="Particle.h" compile="0" resource="0" file="Source/Particle.h"/>
-        <FILE id="GdrlRe" name="Spring.cpp" compile="1" resource="0" file="Source/Spring.cpp"/>
+      <GROUP id="{4A964EF9-A04E-7FCB-747B-C0CE05D6B181}" name="SpringTuning">
+        <FILE id="IWrcno" name="SpringTuningUtilities.h" compile="0" resource="0"
+              file="Source/SpringTuningUtilities.h"/>
+        <FILE id="qc4FhS" name="SpringTuning.h" compile="0" resource="0" file="Source/SpringTuning.h"/>
+        <FILE id="Dtld1i" name="SpringTuning.cpp" compile="1" resource="0"
+              file="Source/SpringTuning.cpp"/>
         <FILE id="k6KOz5" name="Spring.h" compile="0" resource="0" file="Source/Spring.h"/>
-        <FILE id="Dtld1i" name="Physics.cpp" compile="1" resource="0" file="Source/Physics.cpp"/>
-        <FILE id="qc4FhS" name="Physics.h" compile="0" resource="0" file="Source/Physics.h"/>
+        <FILE id="GdrlRe" name="Spring.cpp" compile="1" resource="0" file="Source/Spring.cpp"/>
+        <FILE id="RLQIy0" name="Particle.h" compile="0" resource="0" file="Source/Particle.h"/>
+        <FILE id="lwphGt" name="Particle.cpp" compile="1" resource="0" file="Source/Particle.cpp"/>
       </GROUP>
     </GROUP>
   </MAINGROUP>

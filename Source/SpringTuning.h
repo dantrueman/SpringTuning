@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    Physics.h
+    SpringTuning.h
     Created: 3 Aug 2018 3:43:46pm
     Author:  Theo
 
@@ -9,15 +9,15 @@
 */
 
 #pragma once
-#include "PhysicsUtilities.h"
+#include "SpringTuningUtilities.h"
 
 #include "Particle.h"
 #include "Spring.h"
 
-class Physics : public ReferenceCountedObject
+class SpringTuning : public ReferenceCountedObject
 {
 public:
-	Physics();
+	SpringTuning();
 	void simulate();
     
     float tetherWeight, springWeight;

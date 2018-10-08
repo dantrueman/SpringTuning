@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "PhysicsUtilities.h"
+#include "SpringTuningUtilities.h"
 
 class Particle : public ReferenceCountedObject
 {

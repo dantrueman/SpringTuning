@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "PhysicsUtilities.h"
+#include "SpringTuningUtilities.h"
 
 #include "Particle.h"
 

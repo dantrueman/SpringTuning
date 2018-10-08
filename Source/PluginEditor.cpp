@@ -29,7 +29,7 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
         s->addListener(this);
         s->setSliderStyle(Slider::SliderStyle::LinearBar);
         s->setRange(0.0, 1.0);
-        s->setValue(processor.physics.getTetherSpringWeight(i), dontSendNotification);
+        s->setValue(processor.stuning.getTetherSpringWeight(i), dontSendNotification);
         tetherSliders.add(s);
         
         s = new Slider("s" + String(i));
@@ -37,7 +37,7 @@ SpringTuningAudioProcessorEditor::SpringTuningAudioProcessorEditor (SpringTuning
         s->addListener(this);
         s->setSliderStyle(Slider::SliderStyle::LinearBar);
         s->setRange(0.0, 1.0);
-        s->setValue(processor.physics.getSpringWeight(i), dontSendNotification);
+        s->setValue(processor.stuning.getSpringWeight(i), dontSendNotification);
         
         springSliders.add(s);
     }
@@ -63,12 +63,12 @@ void SpringTuningAudioProcessorEditor::sliderValueChanged (Slider* slider)
     {
         if (name == ("t"+String(i)))
         {
-            processor.physics.setTetherSpringWeight(i, value);
+            processor.stuning.setTetherSpringWeight(i, value);
             break;
         }
         else if (name == ("s"+String(i)))
         {
-            processor.physics.setSpringWeight(i, value);
+            processor.stuning.setSpringWeight(i, value);
             break;
         }
     }
@@ -121,7 +121,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
     float dimc = jmin(getHeight() * 0.05, getWidth() * 0.05);
     int x_offset = 0.075 * getWidth();
     
-    for (auto s : processor.physics.getSprings())
+    for (auto s : processor.stuning.getSprings())
     {
         if (s->getEnabled())
         {
@@ -143,13 +143,14 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
             float cxb = centerx + cosf(radians) * radius;
             float cyb = centery + sinf(radians) * radius;
             
+            double strength = s->getStrength();
             g.setColour(Colours::dimgrey);
-            g.drawLine(cxa, cya, cxb, cyb);
+            g.drawLine(cxa, cya, cxb, cyb,  (strength > 0.0) ? strength * 5.0 + 1.0 : 0.0);
         }
 
     }
     
-    for (auto p : processor.physics.getTetherParticles())
+    for (auto p : processor.stuning.getTetherParticles())
     {
         if (p->getEnabled())
         {
@@ -168,7 +169,7 @@ void SpringTuningAudioProcessorEditor::paint (Graphics& g)
         }
     }
     
-    for (auto p : processor.physics.getParticles())
+    for (auto p : processor.stuning.getParticles())
     {
         if (p->getEnabled())
         {

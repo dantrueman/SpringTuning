@@ -12,7 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-#include "Physics.h"
+#include "SpringTuning.h"
 
 //==============================================================================
 /**
@@ -60,7 +60,7 @@ public:
 	void notePressed(int note);
     void clear(void);
     
-    Physics physics;
+    SpringTuning stuning;
 
 private:
     float tick(float sample);
